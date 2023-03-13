@@ -1,50 +1,72 @@
 import PySimpleGUI as sg
+from PySimpleGUI import Column, VSeparator
 
 max_price = 500
 block_column_size = 15
 block_line_size = 10
 
-
-layout = [
+cabecalho = [
     [
         sg.Text('STEAM BUG'),
+    ]
+]
+
+layout_listas = [
+
+    [
+        sg.Text('GENERO', justification="center", size=block_column_size), sg.Text('IDIOMA', justification="center", size=block_column_size), sg.Text('TAGS', justification="center", size=block_column_size), sg.Text('DATA', justification="center", size=block_column_size), sg.Text('DEV', justification="center", size=block_column_size), sg.Text('PUBLISHER', justification="center", size=block_column_size)
     ],
     [
-        sg.Text('GENERO', justification= "center", size= block_column_size),sg.Text('IDIOMA', justification= "center", size= block_column_size),sg.Text('TAGS', justification= "center", size= block_column_size),sg.Text('DATA', justification= "center", size= block_column_size), sg.Text('DEV', justification= "center", size= block_column_size),sg.Text('PUBLISHER', justification= "center", size= block_column_size)
-    ],
-    [
-        sg.Listbox(["a","b","c","d"], size=(block_column_size, block_line_size), key='-GENERO-'),
-        sg.Listbox(["a","b","c","d"], size=(block_column_size, block_line_size), key='-IDIOMA-'),
-        sg.Listbox(["a","b","c","d"], size=(block_column_size, block_line_size), key='-TAGS-'),
+        sg.Listbox(["a", "b", "c", "d"], size=(block_column_size, block_line_size), key='-GENERO-'),
+        sg.Listbox(["a", "b", "c", "d"], size=(block_column_size, block_line_size), key='-IDIOMA-'),
+        sg.Listbox(["a", "b", "c", "d"], size=(block_column_size, block_line_size), key='-TAGS-'),
         sg.Listbox(list(range(1960, 2022)), size=(block_column_size, block_line_size), key='-DATA-'),
-        sg.Listbox(["a","b","c","d"], size=(block_column_size, block_line_size), key='-DEV-'),
-        sg.Listbox(["a","b","c","d"], size=(block_column_size, block_line_size), key='-PUBLISHER-')
+        sg.Listbox(["a", "b", "c", "d"], size=(block_column_size, block_line_size), key='-DEV-'),
+        sg.Listbox(["a", "b", "c", "d"], size=(block_column_size, block_line_size), key='-PUBLISHER-')
+    ]
+]
+
+layout_price = [
+    [
+        sg.Push(), sg.Text('Preço MIN:', justification="center"), sg.Push(), sg.Text('Preço MAX:', justification="center"), sg.Push()
     ],
     [
-        sg.Push(),sg.Text('Preço MIN:', justification= "center"),sg.Push(), sg.Text('Preço MAX:', justification= "center")
+        sg.Slider(orientation="h", range=(0, max_price), resolution=0.01, key='-PRICE_MIN-'), sg.Slider(orientation="h", range=(0, max_price), resolution=0.01, default_value=max_price, key='-PRICE_MAX-')
     ],
-    [
-        sg.Slider(orientation="h",range=(0,max_price),resolution=0.01,key='-PRICE_MIN-',size=(60, 10)), sg.Slider(orientation="h",range=(0,max_price),resolution=0.01,default_value=max_price,key='-PRICE_MAX-')
-    ],
+]
+
+layout_reviews = [
     [
         [sg.Text('Review:')],
         [
-            sg.Checkbox('Extremamente Positivas', size=(block_column_size * 2, 1)),sg.Checkbox('Muito Positivas', size=(block_column_size * 2, 1)),sg.Checkbox('Positivas', size=(block_column_size * 2, 1))
+            sg.Checkbox('Extremamente Positivas'), sg.Checkbox('Muito Positivas'), sg.Checkbox('Positivas')
         ],
         [
-            sg.Checkbox('Ligeiramente Positivas' , size=(block_column_size * 2, 1)),sg.Checkbox('Neutras', size=(block_column_size * 2, 1)),sg.Checkbox('Ligeiramente Negativas', size=(block_column_size * 2, 1))
+            sg.Checkbox('Ligeiramente Positivas'), sg.Checkbox('Neutras'), sg.Checkbox('Ligeiramente Negativas')
         ],
         [
-            sg.Checkbox('Negativas', size=(block_column_size * 2, 1)),sg.Checkbox('Muito Negativas', size=(block_column_size * 2, 1)),sg.Checkbox('Extremamente Negativas', size=(block_column_size * 2, 1))
+            sg.Checkbox('Negativas'), sg.Checkbox('Muito Negativas'), sg.Checkbox('Extremamente Negativas')
         ]
     ],
     [
-        sg.Text('AppID:'), sg.InputText(key='-ID-'), sg.Text('Nome:'), sg.InputText(key='-NAME-')
+        sg.Text('AppID:'), sg.InputText(key='-ID-', size=10), sg.Text('Nome:'), sg.InputText(key='-NAME-')
     ],
     [sg.Button('BUSCAR'), sg.Button('Limpar Filtros')]
 ]
 
-window = sg.Window('Steam BUG', layout)
+layout = [
+    Column(layout_listas),
+    VSeparator(),
+    Column(layout_price),
+    VSeparator(),
+    Column(layout_reviews)
+]
+
+window = Window(
+    'Steam BUG',
+    layout,
+    element_justification='center'
+)
 
 while True:
     event, values = window.read()
