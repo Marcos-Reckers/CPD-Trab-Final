@@ -62,7 +62,7 @@ layout = [
     Column(layout_reviews)
 ]
 
-window = Window(
+window = sg.Window(
     'Steam BUG',
     layout,
     element_justification='center'
