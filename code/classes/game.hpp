@@ -5,8 +5,6 @@
 
 namespace cpd
 {
-    std::vector<std::string> customSplit(std::string str, char separator);
-    
     enum class Reviews
     {
         Nan,
