@@ -37,14 +37,14 @@
                 "-fdiagnostics-color=always",
                 // "-fanalyzer",
                 "-g",
+                "${fileDirname}\\classes\\*.cpp",
+                "${fileDirname}\\files\\*.cpp",
                 "${fileDirname}\\*.cpp",
                 "-fopenmp",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}.exe",
                 "-lm",
                 "-I${fileDirname}",
-                "-I${cwd}/code/",
-                "-I${cwd}/code/modules/"
             ],
             "options": {
                 "cwd": "${fileDirname}"

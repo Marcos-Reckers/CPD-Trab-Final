@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include "../files/import.hpp"
 
 namespace cpd
 {
@@ -11,43 +12,51 @@ namespace cpd
             this->year = -1;
             this->decade = -1;
         }
-        else if (date == "TBA" || date == "Coming Soon")
-        {
-            this->day = -2;
-            this->month = Months::Nan;
-            this->year = -2;
-            this->decade = -2;
-        }
         else
         {
-            switch (date.length())
+            const auto temp = cpd::customSplit(date, ' ');
+            auto TBA = temp[0];
+            for (auto &c : TBA) c = toupper(c);
+            if (TBA == "TBA" || TBA == "COMING" || TBA == "SUMMER" || TBA == "FALL" 
+            || TBA == "WINTER" || TBA == "SPRING" || TBA == "SOON" || TBA == "COMMING"
+            || TBA == "EM" || TBA == "EVENTUALLY" || TBA == "WHEN" || TBA == "THIS") 
             {
-            case 4 /*2004*/:
+                this->day = -2;
                 this->month = Months::Nan;
-                this->day = -1;
-                this->year = std::stoi(date.substr(0, 4));
-                this->decade = std::stoi(date.substr(3, 1));
-                break;
-            case (3 /*Apr*/ + 1 /* */ + 4 /*2002*/):
-                this->month = StrToMonth(date.substr(0, 3));
-                this->day = -1;
-                this->year = std::stoi(date.substr(4, 4));
-                this->decade = std::stoi(date.substr(6, 1));
-                break;
-            case (3 /*Jan*/ + 1 /* */ + 1 /*1*/ + 2 /*, */ + 4 /*2014*/):
-                this->month = StrToMonth(date.substr(0, 3));
-                this->day = std::stoi(date.substr(4, 1));
-                this->year = std::stoi(date.substr(7, 4));
-                this->decade = std::stoi(date.substr(8, 1));
-                break;
-            case (3 /*Mar*/ + 1 /* */ + 2 /*14*/ + 2 /*, */ + 4 /*2015*/):
-                this->month = StrToMonth(date.substr(0, 3));
-                this->day = std::stoi(date.substr(4, 2));
-                this->year = std::stoi(date.substr(8, 4));
-                this->decade = std::stoi(date.substr(9, 1));
-                break;
-            default:
-                break;
+                this->year = -2;
+                this->decade = -2;
+            }
+            else
+            {
+                switch (date.length())
+                {
+                case 4 /*2004*/:
+                    this->month = Months::Nan;
+                    this->day = -1;
+                    this->year = std::stoi(date.substr(0, 4));
+                    this->decade = std::stoi(date.substr(3, 1));
+                    break;
+                case (3 /*Apr*/ + 1 /* */ + 4 /*2002*/):
+                    this->month = StrToMonth(date.substr(0, 3));
+                    this->day = -1;
+                    this->year = std::stoi(date.substr(4, 4));
+                    this->decade = std::stoi(date.substr(6, 1));
+                    break;
+                case (3 /*Jan*/ + 1 /* */ + 1 /*1*/ + 2 /*, */ + 4 /*2014*/):
+                    this->month = StrToMonth(date.substr(0, 3));
+                    this->day = std::stoi(date.substr(4, 1));
+                    this->year = std::stoi(date.substr(7, 4));
+                    this->decade = std::stoi(date.substr(8, 1));
+                    break;
+                case (3 /*Mar*/ + 1 /* */ + 2 /*14*/ + 2 /*, */ + 4 /*2015*/):
+                    this->month = StrToMonth(date.substr(0, 3));
+                    this->day = std::stoi(date.substr(4, 2));
+                    this->year = std::stoi(date.substr(8, 4));
+                    this->decade = std::stoi(date.substr(9, 1));
+                    break;
+                default:
+                    break;
+                }
             }
         }
     }
@@ -122,7 +131,6 @@ namespace cpd
         }
     }
 
-
     Reviews StrToReviews(const std::string &reviews)
     {
         if (reviews[0] < '9' && reviews[0] > '0')
@@ -159,11 +167,11 @@ namespace cpd
             return Reviews::Negative;
             break;
         case 'M':
-            if(reviews[1] == 'i')
+            if (reviews[1] == 'i')
                 return Reviews::Mixed;
             else
-            {   
-                if(reviews[7] == 'P')
+            {
+                if (reviews[7] == 'P')
                 {
                     return Reviews::MostlyPositive;
                 }
@@ -203,10 +211,13 @@ namespace cpd
             return static_cast<std::string>("NaN");
         }
     }
+    Game::Game()
+        : appid(0), name(""), developer(""), publisher(""), release_date("a"), tags(""), price(""), reviews(Reviews::Nan)
+        {}
 
     Game::Game(const std::string &AppId, const std::string &Name, const std::string &Developer, const std::string &Publisher, const std::string &Release_date, const std::string &Tags, const std::string &Price, const std::string &Reviews)
         : name(Name), developer(Developer), publisher(Publisher), release_date(Release_date), tags(Tags), price(Price), reviews(StrToReviews(Reviews))
     {
-        appid = std::stoi(AppId);
+        appid = std::stoi(AppId.substr(0, AppId.find("/")));
     }
 }

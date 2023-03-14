@@ -114,6 +114,7 @@ namespace cpd
         Reviews reviews;          // Reviews (Overwhelmingly Positive, Very Positive, Positive, Mixed, Negative, Very Negative, Overwhelmingly Negative)
     public:
         Game(const std::string &AppId, const std::string &Name, const std::string &Developer, const std::string &Publisher, const std::string &Release_date, const std::string &Tags, const std::string &Price, const std::string &Reviews);
+        Game();
         ~Game() = default;
         const int getAppid() { return appid; };
         std::string getName() { return name; };
