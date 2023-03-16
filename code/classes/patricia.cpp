@@ -33,7 +33,7 @@ namespace Trees
         return this->children[index];
     }
 
-    Patricia::Node *Patricia::Node::Insert(const std::string &Key, int Data)
+    Patricia::Node *Patricia::Node::Insert(const std::string &key, int Data)
     {
         for (auto child : this->children)
         {
