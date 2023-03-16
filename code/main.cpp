@@ -1,24 +1,24 @@
 #include "classes/patricia.hpp"
 #include "classes/game.hpp"
+#include "classes/hash.hpp"
 #include "files/import.hpp"
 #include <iostream>
-#include <fstream>
-#include <cstdio>
 #include <vector>
 
 int main()
 {
-    Trees::Patricia Patricia;
-    auto games = cpd::importGames("../DB_Steam.csv");
-
-    std::cout << games.size() << std::endl;
-    std::cout << "Inserting..." << std::endl;
+    // Trees::Patricia Patricia;
+    Tables::Hash Hash;
+    auto games = cpd::importGames("../DB_Steam.csv", 10);
     
     for (auto game : games)
     {
-        Patricia.Insert(game.getName(), game.getAppid());
+        auto tags = cpd::customSplit(game.getTags(), ',');
+        for(auto tag : tags)
+        {
+            Hash.Insert(tag, game.getAppid());
+        }
     }
-    std::cout << Patricia << std::endl;
-    std::cout << Patricia.Size() << std::endl;
+    std::cout << Hash;
     return 0;
 }
