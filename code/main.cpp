@@ -32,13 +32,14 @@ int main()
     tree.Insert("ab", 4);
     tree.Insert("abc", 5);
 
-    auto a = tree.Search("a");
+    // auto a = tree.Search("a");
 
-    std::cout << a << std::endl;
-    std::cout << tree.Search("b") << std::endl;
-    std::cout << tree.Search("c") << std::endl;
-    std::cout << tree.Search("ab") << std::endl;
-    std::cout << tree.Search("abc") << std::endl;
+    // std::cout << a << std::endl;
+    // std::cout << tree.Search("b") << std::endl;
+    // std::cout << tree.Search("c") << std::endl;
+    // std::cout << tree.Search("ab") << std::endl;
+    // std::cout << tree.Search("abc") << std::endl;
 
+    std::cout << tree << std::endl;
     return 0;
 }
