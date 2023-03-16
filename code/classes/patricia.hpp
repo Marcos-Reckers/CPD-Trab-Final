@@ -4,35 +4,55 @@
 #include <vector>
 namespace Trees
 {
-    class PatriciaTree
+    class Patricia
     {
     private:
-        struct Node
+        class Node
         {
+        private:
+            int data = -1;
+            int bit_index = -1;
+            friend class Patricia;
             std::string key;
-            std::vector<int> value;
-            std::vector<Node *> children;
-            void print();
-            int AddNode(const Node &node);
-            Node(const std::string &Key);
-            ~Node();
+            Node *left;
+            Node *right;
+
+        public:
+            Node();
+            Node(const std::string &key, int data, int bit_index, Node *left, Node *right);
+            virtual ~Node();
+
+            int GetData();
+            bool SetData(int data);
+
+            std::string GetKey();
+
+            Node *GetLeft();
+            Node *GetRight();
         };
-        std::vector<Node *> root;
+        void recursive_remove(Node *);
+        int bit_get(const std::string &, int);
+        int bit_first_different(const std::string &, const std::string &);
+        Node *root;
 
     public:
-        PatriciaTree();
-        ~PatriciaTree();
-        void insert(std::string key, int value);
-        void remove(std::string key);
-        int search(std::string key);
-        friend std::ostream &operator<<(std::ostream &os, const PatriciaTree &tree)
-        {
-            os << "Patricia Tree:" << std::endl;
-            for (size_t i = 0; i < tree.root.size(); i++)
-            {
-                tree.root[i]->print();
-            }
-            return os;
-        };
+        Patricia();
+        virtual ~Patricia();
+
+        // Purpose:	Insert a new key+data pair in the Patricia structure, and
+        //          return the new node.
+        virtual Node *Insert(const std::string &key, int data);
+
+        // Purpose:	Search for the given key, and return the data associated
+        //          with it (or NULL).
+        virtual int Search(const std::string &key);
+
+        // Purpose:	Search for the given key, and return the node that
+        //          contains it (or NULL).
+        virtual Node *SearchNode(const std::string &key);
+
+        // Purpose:	Remove the node containing the given key. Return
+        //          true if the operation succeeded, false otherwise.
+        // virtual bool Delete(const std::string &key);
     };
 }
