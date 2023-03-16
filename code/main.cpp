@@ -2,23 +2,22 @@
 #include "classes/game.hpp"
 #include "classes/hash.hpp"
 #include "files/import.hpp"
+#include "classes/b+.hpp"
 #include <iostream>
 #include <vector>
 
 int main()
 {
     // Trees::Patricia Patricia;
-    Tables::Hash Hash;
+    // Tables::Hash Hash;
     auto games = cpd::importGames("../DB_Steam.csv", 10);
-    
-    for (auto game : games)
+    Trees::BPlus BPlus;
+    for(auto game : games)
     {
-        auto tags = cpd::customSplit(game.getTags(), ',');
-        for(auto tag : tags)
-        {
-            Hash.Insert(tag, game.getAppid());
-        }
+        
+        BPlus.insert(game.getAppid());
     }
-    std::cout << Hash;
+    BPlus.display(BPlus.getRoot());
+
     return 0;
 }
