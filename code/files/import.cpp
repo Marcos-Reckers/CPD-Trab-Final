@@ -22,7 +22,7 @@ namespace cpd
         return strings;
     }
 
-    std::vector<Game> importGames(std::string path)
+    std::vector<Game> importGames(std::string path, size_t limit)
     {
         std::vector<Game> games;
         std::ifstream myfile;
@@ -35,7 +35,7 @@ namespace cpd
         std::string line;
         std::getline(myfile, line);
         std::getline(myfile, line);
-        while (!myfile.eof())
+        while (!myfile.eof() && games.size() < limit)
         {
             std::getline(myfile, line);
             auto strings = cpd::customSplit(line, ';');

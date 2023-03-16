@@ -2,6 +2,16 @@
 
 namespace Trees
 {
+    size_t Compare(const std::string &str1, const std::string &str2)
+    {
+        size_t i = 0;
+        while (i < str1.length() && i < str2.length() && str1[i] == str2[i])
+        {
+            i++;
+        }
+        return i;
+    }
+
     Patricia::Node::Node() : data(-1), key(), children() {}
     Patricia::Node::Node(const std::string &Key, int Data) : data(Data), key(Key), children() {}
     Patricia::Node::Node(const Node &node) : data(node.data), key(node.key), children(node.children) {}
@@ -9,81 +19,83 @@ namespace Trees
     int Patricia::Node::GetData() { return this->data; }
     std::string Patricia::Node::GetKey() { return this->key; }
 
-    bool Patricia::Node::SetData(int data)
+    bool Patricia::Node::SetData(int Data)
     {
-        this->data = data;
+        this->data = Data;
         return true;
     }
 
     Patricia::Node *Patricia::Node::GetChild(size_t index)
     {
         if (index >= this->children.size())
-        {
-            return NULL;
-        }
+            return nullptr; // Index out of bounds
+
         return this->children[index];
     }
 
     Patricia::Node *Patricia::Node::Insert(const std::string &Key, int Data)
     {
-        if (this->key.length() < Key.length()) // If the key of the current node is shorter than the key of the node to insert
+        for (auto child : this->children)
         {
-            if (Key.starts_with(this->key)) // If the key of the node to insert starts with the key of the current node
+            if (child->key == key)
             {
-                for (auto child : this->children) // For each child of the current node
-                {
-                    return child->Insert(Key.substr(this->key.length(), Key.length() - this->key.length()), Data);
-                }
-                auto newChild = new Node(Key.substr(this->key.length(), Key.length() - this->key.length()), Data);
-                this->children.push_back(newChild); // Add the new node as a child of the current node
-                return newChild;                    // Return true because the operation succeeded
+                child->data = Data;
+                return child;
             }
-            else
+            auto i = Compare(key, child->key);
+            if (i == 0)
             {
-                return nullptr; // Return false because the operation failed
+                // nenhum e substring do outro
+                continue;
+            }
+            else if (i > key.length())
+            {
+                // key é substring de child
+                // bol -> bola
+                auto newNode = new Node(*child);
+                newNode->key = child->key.substr(i, child->key.length() - i);
+                child->key = key;
+                child->data = Data;
+                child->children.clear();
+                child->children.push_back(newNode);
+                return child;
+            }
+            else if (i == child->key.length())
+            {
+                // child e substring de key
+                // bolacha -> bola
+                return child->Insert(key.substr(i, key.length() - i), Data);
+            }
+            else if (i > 0 && i < key.length() && i < child->key.length())
+            {
+                // key e child tem uma substring em comum
+                // bolo -> bola
+                auto newNode = new Node(key.substr(i, key.length() -i), Data);
+                auto newNode1 = new Node(*child);
+                newNode1->key = child->key.substr(i, child->key.length() - i);
+                child->key = key.substr(0, i);
+                child->data = -1;
+                child->children.clear();
+                child->children.push_back(newNode);
+                child->children.push_back(newNode1);
+                return newNode;
             }
         }
-        else if (this->key.length() > Key.length()) // If the key of the current node is longer than the key of the node to insert
-        {
-            if (this->key.starts_with(Key)) // If the key of the current node starts with the key of the node to insert
-            {
-                auto i = this->key.find(Key);                                // Find the index of the first character of the key of the node to insert in the key of the current node
-                auto newChild = new Node(*this);                             // Create a new node with the same data and key as the current node
-                newChild->key = this->key.substr(i, this->key.length() - i); // Set the key of the new node to the part of the key of the current node that is not in the key of the node to insert
-                this->key = Key;                                             // Set the key of the current node to the key of the node to insert
-                this->data = Data;                                           // Set the data of the current node to the data of the node to insert
-                this->children.clear();                                      // Clear the children of the current node
-                this->children.push_back(newChild);                          // Add the new node as a child of the current node
-                return this;                                                 // Return true because the operation succeeded
-            }
-            else
-            {
-                return nullptr; // Return false because the operation failed
-            }
-        }
-        else
-        {
-            if (this->key == Key) // If the key of the current node is the same as the key of the node to insert
-            {
-                this->data = Data; // Set the data of the current node to the data of the node to insert
-                return this;       // Return true because the operation succeeded
-            }
-            else
-            {
-                return nullptr; // Return false because the operation failed
-            }
-        }
+        // nao e substring de nenhum filho
+        auto newNode = new Node(key, Data);
+        this->children.push_back(newNode); // Add the new node as a child of the root
+        return newNode;                    // Return the new node
     }
 
     Patricia::Node *Patricia::Node::Search(const std::string &Key)
     {
         if (this->key == Key)
         {
-            return this; // Return the current node because the key of the current node is the same as the key of the node to search for
+            return this; // Return the current node
         }
-        else if (Key.starts_with(this->key)) // If the key of the node to search for starts with the key of the current node
+        else if (Key.starts_with(this->key))
         {
-            for (auto child : this->children) // For each child of the current node
+            for (auto child : this->children)
             {
                 auto temp = child->Search(Key.substr(this->key.length(), Key.length() - this->key.length())); // Search for the node to search for in the child
                 if (temp != nullptr)                                                                          // If the node was found
@@ -97,22 +109,35 @@ namespace Trees
         return nullptr; // Return null because the node was not found
     }
 
-    void Patricia::Node::recursive_remove()
+    void Patricia::Node::clear()
     {
         for (auto child : this->children)
-        {
-            child->recursive_remove();
-        }
+            child->clear(); // Remove the child
 
-        // Remove the root
-        delete this;
+        delete this; // Remove the root
     }
 
-    void Patricia::recursive_remove()
+    std::vector<int> Patricia::Node::GetChildrenData()
+    {
+        std::vector<int> childrenData;
+        for (auto child : this->children)
+        {
+            for (auto childData : child->GetChildrenData())
+            {
+
+                childrenData.push_back(childData);
+            }
+        }
+        if (this->data != -1)
+            childrenData.push_back(this->data);
+        return childrenData;
+    }
+
+    void Patricia::clear()
     {
         for (auto child : this->root)
         {
-            child->recursive_remove(); // Remove the child
+            child->clear(); // Remove the child
         }
 
         this->root.clear(); // Clear the root
@@ -126,12 +151,7 @@ namespace Trees
 
     Patricia::~Patricia()
     {
-        for (auto child : root) // For each child of the root
-        {
-            child->recursive_remove(); // Remove the child
-        }
-
-        root.clear(); // Clear the root
+        this->clear(); // Clear the tree
     }
 
     size_t Patricia::Size()
@@ -139,48 +159,109 @@ namespace Trees
         return this->size; // Return the size
     }
 
-    Patricia::Node *Patricia::Insert(const std::string &Key, int data)
+    Patricia::Node *Patricia::Insert(const std::string &Key, int Data)
     {
+        this->size++;
         std::string key = Key;
         for (auto &c : key)
             c = std::tolower(c);
 
-        for (auto child : root) // For each child of the root
+        for (auto child : this->root)
         {
-            if (child->key[0] == key[0]) // If the first character of the key of the child is the same as the first character of the key of the node to search for
+            if (child->key == key)
             {
-                if (child->Insert(key, data)) // If the node was inserted
-                {
-                    return child; // Return the child
-                }
+                child->data = Data;
+                return child;
+            }
+            auto i = Compare(key, child->key);
+            if (i == 0)
+            {
+                // nenhum e substring do outro
+                continue;
+            }
+            else if (i > key.length())
+            {
+                // key é substring de child
+                // bol -> bola
+                auto newNode = new Node(*child);
+                newNode->key = child->key.substr(i, child->key.length() - i);
+                child->key = key;
+                child->data = Data;
+                child->children.clear();
+                child->children.push_back(newNode);
+                return child;
+            }
+            else if (i == child->key.length())
+            {
+                // child e substring de key
+                // bolacha -> bola
+                return child->Insert(key.substr(i, key.length() - i), Data);
+            }
+            else if (i > 0 && i < key.length() && i < child->key.length())
+            {
+                // key e child tem uma substring em comum
+                // bolo -> bola
+                auto newNode = new Node(key.substr(i, key.length() - i), Data);
+                auto newNode1 = new Node(*child);
+                newNode1->key = child->key.substr(i, child->key.length() - i);
+                child->key = key.substr(0, i);
+                child->data = -1;
+                child->children.clear();
+                child->children.push_back(newNode);
+                child->children.push_back(newNode1);
+                return newNode;
             }
         }
-        auto newNode = new Node(key, data); // Create a new node
-        root.push_back(newNode);            // Add the new node as a child of the root
-        return newNode;                     // Return the new node
+        // nao e substring de nenhum filho
+        auto newNode = new Node(key, Data);
+        this->root.push_back(newNode); // Add the new node as a child of the root
+        return newNode;                    // Return the new node
     }
 
-    int Patricia::Search(const std::string &Key)
+    Patricia::Node *Patricia::SearchNode(const std::string &Key)
     {
         std::string key = Key;
         for (auto &c : key)
             c = std::tolower(c);
 
-        for (auto child : root) // For each child of the root
+        for (auto child : this->root)
         {
-            if (child->key[0] == key[0]) // If the first character of the key of the child is the same as the first character of the key of the node to search for
+            if (key.starts_with(child->key))
             {
                 auto node = child->Search(key); // Search for the node
                 if (node != nullptr)            // If the node was found
                 {
-                    return node->data; // Return the data of the node
+                    return node; // Return the data of the node
                 }
             }
+        }
+        return nullptr; // Return nullptr because the node was not found
+    }
+
+    int Patricia::Search(const std::string &Key)
+    {
+        auto node = this->SearchNode(Key); // Search for the node
+        if (node != nullptr)               // If the node was found
+        {
+            return node->data; // Return the data of the node
         }
         return -1; // Return -1 because the node was not found
     }
 
-    // bool Patricia::Delete(const std::string &Key)
-    // {
-    // }
+    std::vector<int> Patricia::SearchPrefix(const std::string &prefix)
+    {
+        auto firstOcurrence = this->SearchNode(prefix); // Search for the first ocurrence of the prefix
+
+        if (firstOcurrence == nullptr) // If the first ocurrence was not found
+            return std::vector<int>(); // Return an empty vector
+
+        return firstOcurrence->GetChildrenData(); // Return the data of the children of the first ocurrence
+    }
+
+    bool Patricia::Delete(const std::string &Key)
+    {
+        auto toDelete = this->SearchNode(Key); // Search for the node to delete
+        toDelete->data = -1;                   // Set the data of the node to delete to -1
+        return true;                           // Return true because the operation succeeded
+    }
 }

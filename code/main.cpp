@@ -8,38 +8,39 @@
 
 int main()
 {
-    // auto games = cpd::importGames("../DB_Steam.csv");
+    Trees::Patricia Patricia;
+    // auto games = cpd::importGames("../DB_Steam.csv", 20);
 
-    // int x = 0;
     // std::cout << games.size() << std::endl;
-    // while(x != -1)
+    // std::cout << "Inserting..." << std::endl;
+
+    // for (auto game : games)
     // {
-    //     std::cout << "Enter a number: ";
-    //     std::cin >> x;
-    //     if (x < 0 || x >= games.size())
-    //     {
-    //         std::cout << "Invalid number" << std::endl;
-    //     }
-    //     else
-    //     {
-    //         std::cout << games[x] << std::endl;
-    //     }
+    //     Patricia.Insert(game.getName(), game.getAppid());
+    //     std::cout << Patricia << std::endl;
     // }
-    Trees::Patricia tree;
-    tree.Insert("a", 1);
-    tree.Insert("b", 2);
-    tree.Insert("c", 3);
-    tree.Insert("ab", 4);
-    tree.Insert("abc", 5);
 
-    // auto a = tree.Search("a");
+    Patricia.Insert("Bola", 1);
+    std::cout << Patricia << std::endl;
+    Patricia.Insert("Bola", 12);
+    std::cout << Patricia << std::endl;
+    Patricia.Insert("Bor", 2);
+    std::cout << Patricia << std::endl;
+    Patricia.Insert("Boc", 3);
+    std::cout << Patricia << std::endl;
+    Patricia.Insert("Bolacha", 4);
+    std::cout << Patricia << std::endl;
+    Patricia.Insert("Bolo", 5);
+    std::cout << Patricia << std::endl;
+    Patricia.Insert("Baco", 6);
+    std::cout << Patricia << std::endl;
+    Patricia.Insert("Ola", 20);
+    std::cout << Patricia << std::endl;
+    Patricia.Insert("Olaria", 21);
+    std::cout << Patricia << std::endl;
+    Patricia.Insert("Cola", 30);
 
-    // std::cout << a << std::endl;
-    // std::cout << tree.Search("b") << std::endl;
-    // std::cout << tree.Search("c") << std::endl;
-    // std::cout << tree.Search("ab") << std::endl;
-    // std::cout << tree.Search("abc") << std::endl;
-
-    std::cout << tree << std::endl;
+    std::cout << Patricia << std::endl;
+    std::cout << Patricia.Size() << std::endl;
     return 0;
 }

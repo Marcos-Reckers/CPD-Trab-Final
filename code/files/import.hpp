@@ -10,5 +10,5 @@
 namespace cpd
 {
     std::vector<std::string> customSplit(std::string str, char separator);
-    std::vector<Game> importGames(std::string path);
+    std::vector<Game> importGames(std::string path, size_t limit = -1);
 }
