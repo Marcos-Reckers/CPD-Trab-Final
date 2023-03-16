@@ -5,6 +5,7 @@
             "label": "gpp build active file linux",
             "command": "/usr/bin/g++",
             "args": [
+                "-std=c++20",
                 "-Wall",
                 "-fdiagnostics-color=always",
                 "-g",
@@ -33,9 +34,11 @@
             "label": "gpp build active file windows",
             "command": "g++",
             "args": [
+                "-std=c++20",
                 "-Wall",
                 "-fdiagnostics-color=always",
                 // "-fanalyzer",
+                "-Wno-analyzer-use-of-uninitialized-value",
                 "-g",
                 "${fileDirname}\\classes\\*.cpp",
                 "${fileDirname}\\files\\*.cpp",

@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+
 namespace Trees
 {
     class Patricia
@@ -10,49 +11,35 @@ namespace Trees
         class Node
         {
         private:
-            int data = -1;
-            int bit_index = -1;
-            friend class Patricia;
-            std::string key;
-            Node *left;
-            Node *right;
+            friend class Patricia;        // Allow Patricia to access private members of Node
+            int data = -1;                // -1 means no data
+            std::string key;              // Key of the node
+            std::vector<Node *> children; // Children of the node
 
         public:
-            Node();
-            Node(const std::string &key, int data, int bit_index, Node *left, Node *right);
-            virtual ~Node();
-
-            int GetData();
-            bool SetData(int data);
-
-            std::string GetKey();
-
-            Node *GetLeft();
-            Node *GetRight();
+            Node();                                                   // Default constructor
+            Node(const std::string &Key, int Data);                   // Constructor with key and data
+            Node(const Node &node);                                   // Copy constructor
+            ~Node();                                                  // Destructor
+            std::string GetKey();                                     // Get the key of the node
+            int GetData();                                            // Get the data of the node
+            bool SetData(int data);                                   // Set the data of the node
+            Node *GetChild(size_t index);                             // Get the child of the node at the given index
+            Patricia::Node *Insert(const std::string &Key, int Data); // Insert a new node in the children of the current node
+            Patricia::Node *Search(const std::string &Key);           // Search for a node in the children of the current node
+            void recursive_remove();                                  // Remove all the children of the current node
         };
-        void recursive_remove(Node *);
-        int bit_get(const std::string &, int);
-        int bit_first_different(const std::string &, const std::string &);
-        Node *root;
+
+        void recursive_remove();  // Remove all the nodes of the Patricia structure
+        size_t size = 0;          // Number of nodes in the Patricia structure
+        std::vector<Node *> root; // Root of the Patricia structure
 
     public:
-        Patricia();
-        virtual ~Patricia();
-
-        // Purpose:	Insert a new key+data pair in the Patricia structure, and
-        //          return the new node.
-        virtual Node *Insert(const std::string &key, int data);
-
-        // Purpose:	Search for the given key, and return the data associated
-        //          with it (or NULL).
-        virtual int Search(const std::string &key);
-
-        // Purpose:	Search for the given key, and return the node that
-        //          contains it (or NULL).
-        virtual Node *SearchNode(const std::string &key);
-
-        // Purpose:	Remove the node containing the given key. Return
-        //          true if the operation succeeded, false otherwise.
-        // virtual bool Delete(const std::string &key);
+        Patricia();                                     // Default constructor
+        ~Patricia();                                    // Destructor
+        size_t Size();                                  // Get the number of nodes in the Patricia structure
+        Node *Insert(const std::string &key, int data); // Insert a new node in the Patricia structure
+        int Search(const std::string &key);             // Search for a node in the Patricia structure and return its data (or -1 if not found)
+        // bool Delete(const std::string &key); // Remove a node from the Patricia structure
     };
 }

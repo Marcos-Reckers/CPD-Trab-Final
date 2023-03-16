@@ -8,15 +8,23 @@
 
 int main()
 {
-    //     auto games = cpd::importGames("../DB_Steam.csv");
+    // auto games = cpd::importGames("../DB_Steam.csv");
 
-    //     int x = 0;
-    //     std::cout << games.size() << std::endl;
-    //     while(x != -1)
+    // int x = 0;
+    // std::cout << games.size() << std::endl;
+    // while(x != -1)
+    // {
+    //     std::cout << "Enter a number: ";
+    //     std::cin >> x;
+    //     if (x < 0 || x >= games.size())
     //     {
-    //         std::cin >> x;
+    //         std::cout << "Invalid number" << std::endl;
+    //     }
+    //     else
+    //     {
     //         std::cout << games[x] << std::endl;
     //     }
+    // }
     Trees::Patricia tree;
     tree.Insert("a", 1);
     tree.Insert("b", 2);
@@ -25,7 +33,7 @@ int main()
     tree.Insert("abc", 5);
 
     auto a = tree.Search("a");
-    
+
     std::cout << a << std::endl;
     std::cout << tree.Search("b") << std::endl;
     std::cout << tree.Search("c") << std::endl;
