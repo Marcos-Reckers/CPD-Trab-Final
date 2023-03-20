@@ -8,14 +8,17 @@
                 "-std=c++20",
                 "-Wall",
                 "-fdiagnostics-color=always",
+                // "-fanalyzer",
+                "-Wno-analyzer-use-of-uninitialized-value",
                 "-g",
-                "${fileDirname}/*.cpp",
+                "${fileDirname}\\classes\\*.cpp",
+                "${fileDirname}\\classes\\Trees\\*.cpp",
+                "${fileDirname}\\*.cpp",
                 "-fopenmp",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}",
                 "-lm",
                 "-I${fileDirname}",
-                "-I${cwd}/code/modules/"
             ],
             "options": {
                 "cwd": "${fileDirname}"
@@ -41,7 +44,7 @@
                 "-Wno-analyzer-use-of-uninitialized-value",
                 "-g",
                 "${fileDirname}\\classes\\*.cpp",
-                "${fileDirname}\\files\\*.cpp",
+                "${fileDirname}\\classes\\Trees\\*.cpp",
                 "${fileDirname}\\*.cpp",
                 "-fopenmp",
                 "-o",
