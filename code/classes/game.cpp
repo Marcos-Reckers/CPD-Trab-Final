@@ -257,19 +257,28 @@ namespace DB
             file.write(data[i], sizes[i]);                                  // Write the data to the file
         }
 
-        int buffer = GameSize - size; // No game should be larger than 1300 bytes (the largest in the file is 1174)
-
-        file.write("", buffer); // Write empty bytes to fill the buffer
+        int bufferSize = GameSize - size; // No game should be larger than 1300 bytes (the largest in the file is 1174)
+        for(int i = 0; i < bufferSize; i++)
+        {
+            file.write("", 1); // Write empty bytes to fill the buffer
+        }
 
         // Return the number of bytes written
-        return buffer + size;
+        return bufferSize + size;
     }
 
     bool Game::readFromFile(std::ifstream &file, int Index)
     {
-        char buffer[GameSize];        // The buffer to read the data into
-        file.seekg(Index * GameSize); // Seek to the correct position in the file (each game is 1300 bytes)
-        file.read(buffer, GameSize);  // Read the data into the buffer
+        char buffer[GameSize];             // The buffer to read the data into
+        if (!file.seekg(Index * GameSize)) // Seek to the correct position in the file (each game is 1300 bytes)
+        {
+            return false;
+        }
+
+        if (!file.read(buffer, GameSize)) // Read the data into the buffer
+        {
+            return false;
+        }
 
         // 0 - AppId, 1 - Name, 2 - Developer, 3 - Publisher, 4 - Reviews, 5 - Tags, 6 - Price, 7 - Release Date
         std::array<char *, GameFields> data;
