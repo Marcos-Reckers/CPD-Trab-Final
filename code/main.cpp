@@ -1,23 +1,24 @@
-#include "classes/patricia.hpp"
+#include "classes/Trees/patricia.hpp"
 #include "classes/game.hpp"
 #include "classes/hash.hpp"
-#include "files/import.hpp"
-#include "classes/b+.hpp"
+#include "classes/io.hpp"
+#include "classes/Trees/b+.hpp"
 #include <iostream>
 #include <vector>
+#include <fstream>
+#include <chrono>
 
 int main()
 {
-    // Trees::Patricia Patricia;
-    // Tables::Hash Hash;
-    auto games = cpd::importGames("../DB_Steam.csv", 10);
-    Trees::BPlus BPlus;
-    for(auto game : games)
-    {
-        
-        BPlus.insert(game.getAppid());
-    }
-    BPlus.display(BPlus.getRoot());
+    // auto games = IO::importGames("../DB_Steam.csv");
+
+    // std::cout << "Games imported: " << games.size() << std::endl;
+
+    // IO::exportGames("Steam.DB", games);
+
+    // auto game = IO::getGame("Steam.DB", 23);
+
+    // std::cout << game << std::endl;
 
     return 0;
 }
