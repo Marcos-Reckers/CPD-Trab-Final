@@ -2,8 +2,15 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <fstream>
+#include <array>
 
-namespace cpd
+namespace IO
+{
+    std::vector<std::string> customSplit(const std::string &str, char separator);
+}
+
+namespace DB
 {
     enum class Reviews
     {
@@ -76,6 +83,18 @@ namespace cpd
             os << "$" << price.price / 100 << "." << price.price % 100;
             return os;
         };
+        std::string toStr()
+        {
+            if (price == -1)
+            {
+                return "NaN";
+            }
+            else if (price == 0)
+            {
+                return "Free";
+            }
+            return "$" + std::to_string(price / 100) + "." + std::to_string(price % 100);
+        }
     };
 
     class ReleaseDate
@@ -99,6 +118,10 @@ namespace cpd
             os << MonthToStr(release.month) << " " << release.day << ", " << release.year;
             return os;
         };
+        std::string toStr()
+        {
+            return MonthToStr(month) + " " + std::to_string(day) + ", " + std::to_string(year);
+        }
     };
 
     class Game
@@ -114,6 +137,7 @@ namespace cpd
         Reviews reviews;          // Reviews (Overwhelmingly Positive, Very Positive, Positive, Mixed, Negative, Very Negative, Overwhelmingly Negative)
     public:
         Game(const std::string &AppId, const std::string &Name, const std::string &Developer, const std::string &Publisher, const std::string &Release_date, const std::string &Tags, const std::string &Price, const std::string &Reviews);
+        Game(int AppId, const std::string &Name, const std::string &Developer, const std::string &Publisher, const ReleaseDate &Release_date, const std::string &Tags, const GamePrice &Price, const Reviews &Reviews);
         Game();
         ~Game() = default;
         const int getAppid() { return appid; };
@@ -132,5 +156,7 @@ namespace cpd
                << " Price: " << game.price << " Reviews: " << ReviewsToStr(game.reviews);
             return os;
         };
+        int writeToFile(std::ofstream &file);
+        bool readFromFile(std::ifstream &file, int Index);
     };
 }
