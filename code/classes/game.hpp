@@ -24,7 +24,7 @@ namespace DB
         Game(int AppId, const std::string &Name, const std::string &Developer, const std::string &Publisher, const ReleaseDate &Release_date, const std::string &Tags, const GamePrice &Price, const Reviews &Reviews);
         Game();
         ~Game() = default;
-        const int getAppid() { return appid; };
+        const int getAppid() const { return appid; };
         std::string getName() { return name; };
         std::string getDeveloper() { return developer; };
         std::string getPublisher() { return publisher; };

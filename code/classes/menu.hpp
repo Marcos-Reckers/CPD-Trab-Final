@@ -5,13 +5,11 @@
 
 namespace MENU
 {
-    const std::string DBPath = "Steam.db"; // Path to the database.
-
     int HelpMessage();
 
     int Help(const std::vector<std::string> &args);
 
-    int Convert(const std::vector<std::string> &args);
+    int ImpExp(const std::vector<std::string> &args);
 
     int Get(const std::vector<std::string> &args);
 
@@ -20,4 +18,6 @@ namespace MENU
     int Append(const std::vector<std::string> &args);
 
     int Load(const std::vector<std::string> &args);
+
+    int Convert(const std::vector<std::string> &args);
 }

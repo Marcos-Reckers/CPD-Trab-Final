@@ -2,46 +2,15 @@
 
 namespace IO
 {
-    void AddVecToTable(const std::string &str, Tables::Hash &Table, int Appid)
+    std::vector<DB::Game> importGames(const std::string &path, size_t limit)
     {
-        for (auto tag : STR::customSplit(str, ','))
-        {
-            if (tag[0] == ' ' && tag.size() > 1)
-                tag = tag.substr(1, tag.size() - 1);
-            Table.Insert(tag, Appid);
-        }
-    }
-
-    GamesTuple importGames(const std::string &path, size_t limit)
-    {
-        std::vector<DB::Game> games;      // Vector of games to be returned.
-        Trees::Patricia patricia;         // Patricia tree to be returned.
-        Tables::Hash languages;           // Hash table of languages.
-        Tables::Hash genres;              // Hash table of genres.
-        Tables::Hash developers;          // Hash table of developers.
-        Tables::Hash publishers;          // Hash table of publishers.
-        Tables::Hash popularTags;         // Hash table of popular tags.
+        std::vector<DB::Game> games; // Vector of games to be returned.
 
         std::ifstream myfile; // File to be read.
         myfile.open(path);    // Open the file.
 
-        if (!myfile.is_open() || !myfile.good())
-        {
-            std::cout << "Error opening file" << std::endl;
-            return std::make_tuple(games, patricia, std::make_tuple(languages, genres, developers, publishers, popularTags));
-        }
-
-        const int urlIndex = 0;         // Index of the url in the csv file.
-        const int nameIndex = 1;        // Index of the name in the csv file.
-        const int reviewIndex = 2;      // Index of the review in the csv file.
-        const int releaseDateIndex = 3; // Index of the release date in the csv file.
-        const int developerIndex = 4;   // Index of the developer in the csv file.
-        const int publisherIndex = 5;   // Index of the publisher in the csv file.
-        const int popularTagsIndex = 6; // Index of the popular tags in the csv file.
-        const int gameDetailsIndex = 7; // Index of the game details in the csv file.
-        const int languagesIndex = 8;   // Index of the languages in the csv file.
-        const int genreIndex = 9;       // Index of the genre in the csv file.
-        const int priceIndex = 10;      // Index of the price in the csv file.
+        if (!myfile.good())
+            return games;
 
         std::string line;           // Line to be read.
         std::getline(myfile, line); // Skip the first line.
@@ -59,91 +28,30 @@ namespace IO
                           strings[publisherIndex], strings[releaseDateIndex], tags,
                           strings[priceIndex], strings[reviewIndex]);
 
-            patricia.Insert(strings[nameIndex], game.getAppid());
-
-            AddVecToTable(strings[popularTagsIndex], popularTags, game.getAppid());
-            AddVecToTable(strings[languagesIndex], languages, game.getAppid());
-            AddVecToTable(strings[genreIndex], genres, game.getAppid());
-            AddVecToTable(strings[developerIndex], developers, game.getAppid());
-            AddVecToTable(strings[publisherIndex], publishers, game.getAppid());
-
             // Add the game to the vector.
             games.push_back(game); // Add the game to the vector.
         }
 
         myfile.close();
 
-        auto Hashes = std::make_tuple(languages, genres, developers, publishers, popularTags);
-        return std::make_tuple(games, patricia, Hashes);
+        return games;
     }
 
-    int exportGames(const std::string &path, const GamesTuple &games)
+    int exportGames(const std::string &path, const std::vector<DB::Game> &games)
     {
         std::ofstream file(path, std::ios::binary); // File to be written to.
         size_t Filesize = 0;                        // Size of the file.
 
-        if (!file.is_open())
-        {
-            std::cout << "Error opening file" << std::endl;
-            return -1;
-        }
-
         if (!file.good())
-        {
-            std::cout << "Error writing to file" << std::endl;
             return -1;
-        }
 
-        for (auto game : std::get<0>(games))
+        for (auto game : games)
         {
             Filesize += game.writeToFile(file); // Write the game to the file.
         }
 
         file.close();
 
-        // auto &patricia = std::get<1>(games);
-        // std::ofstream patriciaFile(path + ".patricia", std::ios::binary);
-        // patriciaFile << patricia << std::endl;
-        // patriciaFile.close();
-
-        auto &Hashes = std::get<2>(games);
-        std::ofstream langFile(path + ".lang", std::ios::binary);
-        for (auto lang : std::get<0>(Hashes).hashTable)
-        {
-            langFile << lang.first << std::endl;
-        }
-        langFile.close();
-
-        std::ofstream genreFile(path + ".genre", std::ios::binary);
-        for(auto genre : std::get<1>(Hashes).hashTable)
-        {
-            genreFile << genre.first << std::endl;
-        }
-        genreFile.close();
-
-        std::ofstream devFile(path + ".dev", std::ios::binary);
-        for(auto dev : std::get<2>(Hashes).hashTable)
-        {
-            devFile << dev.first << std::endl;
-        }
-        devFile.close();
-
-        std::ofstream pubFile(path + ".pub", std::ios::binary);
-        for(auto pub : std::get<3>(Hashes).hashTable)
-        {
-            pubFile << pub.first << std::endl;
-        }
-        pubFile.close();
-
-        std::ofstream tagFile(path + ".tag", std::ios::binary);
-        for(auto tag : std::get<4>(Hashes).hashTable)
-        {
-            tagFile << tag.first << std::endl;
-        }
-        tagFile.close();
-
-        // patricia.writeToFile(path + ".patricia"); // Write the patricia tree to the file.
-        // bplus.writeToFile(path + ".bplus");       // Write the bplus tree to the file.
         return Filesize;
     }
 
@@ -151,17 +59,8 @@ namespace IO
     {
         std::ifstream file(path, std::ios::binary); // File to be read.
 
-        if (!file.is_open())
-        {
-            std::cout << "Error opening file" << std::endl;
-            return DB::Game();
-        }
-
         if (!file.good())
-        {
-            std::cout << "Error reading from file" << std::endl;
             return DB::Game();
-        }
 
         DB::Game game; // Game to be returned.
 
@@ -209,17 +108,8 @@ namespace IO
     {
         std::ifstream file(path, std::ios::binary); // File to be read.
 
-        if (!file.is_open())
-        {
-            std::cout << "Error opening file" << std::endl;
-            return std::vector<DB::Game>();
-        }
-
         if (!file.good())
-        {
-            std::cout << "Error reading from file" << std::endl;
             return std::vector<DB::Game>();
-        }
 
         std::vector<DB::Game> games; // Game to be returned.
 
@@ -232,5 +122,121 @@ namespace IO
         }
 
         return games; // Read the game from the file.
+    }
+
+    int ConvertDatabase(const std::string &path, size_t limit)
+    {
+        //! Imports the Data
+        std::vector<DB::Game> games; // Vector of games
+        Trees::Patricia patricia;    // Patricia tree
+        Tables::Hash languages;      // Hash table of languages.
+        Tables::Hash genres;         // Hash table of genres.
+        Tables::Hash developers;     // Hash table of developers.
+        Tables::Hash publishers;     // Hash table of publishers.
+        Tables::Hash popularTags;    // Hash table of popular tags.
+
+        //* Open the input file
+        std::ifstream input(path); // File to be read.
+
+        if (!input.good())
+            return -1;
+
+        std::string line;          // Line to be read.
+        std::getline(input, line); // Skip the first line.
+        std::getline(input, line); // Skip the second line.
+
+        while (!input.eof() && games.size() < limit) // While we haven't reached the end of the file.
+        {
+            std::getline(input, line);                  // Read the next line.
+            auto strings = STR::customSplit(line, ';'); // Split the line into a vector of strings.
+            if(strings.size() != 11)
+                std::cout << strings.size() << ' ' << strings[nameIndex] << ' ' << games.size() << std::endl; //! Debug
+            // Add the tags to the game.
+            const std::string tags = strings[popularTagsIndex] + ", " + strings[gameDetailsIndex] + ", " + strings[languagesIndex] + ", " + strings[genreIndex];
+
+            const DB::Game game(strings[urlIndex], strings[nameIndex], strings[developerIndex],
+                                strings[publisherIndex], strings[releaseDateIndex], tags,
+                                strings[priceIndex], strings[reviewIndex]);
+
+            patricia.Insert(strings[nameIndex], game.getAppid());
+
+            popularTags.Insert(STR::customSplit(strings[popularTagsIndex], ','), game.getAppid());
+            languages.Insert(STR::customSplit(strings[languagesIndex], ','), game.getAppid());
+            genres.Insert(STR::customSplit(strings[genreIndex], ','), game.getAppid());
+            developers.Insert(STR::customSplit(strings[developerIndex], ','), game.getAppid());
+            publishers.Insert(STR::customSplit(strings[publisherIndex], ','), game.getAppid());
+
+            // Add the game to the vector.
+            games.push_back(game); // Add the game to the vector.
+        }
+
+        input.close();
+
+        //! Exports the Databse
+
+        //* Creates the output folder
+        std::filesystem::create_directories(folder);
+        //* Output file name
+        const auto &DBPath = folder + DBName;
+
+        // outputs the games to the file
+        std::ofstream database(DBPath, std::ios::binary);
+        if (!database.good())
+            return -1;
+        for (auto game : games)
+        {
+            game.writeToFile(database);
+        }
+        database.close();
+
+        // outputs the patricia tree to the file
+        std::ofstream patriciaFile(DBPath + patExt, std::ios::binary);
+        if(!patriciaFile.good())
+            return -1;
+        patricia.writeToFile(patriciaFile);
+        patriciaFile.close();
+
+        //* outputs the tables to the file
+        std::ofstream langFile(DBPath + langExt, std::ios::binary);
+        if(!langFile.good())
+            return -1;
+        languages.writeToFile(langFile);
+        langFile.close();
+
+        std::ofstream genreFile(DBPath + genreExt, std::ios::binary);
+        if(!genreFile.good())
+            return -1;
+        genres.writeToFile(genreFile);
+        genreFile.close();
+
+        std::ofstream devFile(DBPath + devExt, std::ios::binary);
+        if(!devFile.good())
+            return -1;
+        developers.writeToFile(devFile);
+        devFile.close();
+
+        std::ofstream pubFile(DBPath + pubExt, std::ios::binary);
+        if(!pubFile.good())
+            return -1;
+        publishers.writeToFile(pubFile);
+        pubFile.close();
+
+        std::ofstream tagFile(DBPath + tagExt, std::ios::binary);
+        if(!tagFile.good())
+            return -1;
+        popularTags.writeToFile(tagFile);
+        tagFile.close();
+
+        return 0;
+    }
+
+    bool databaseExists()
+    {
+        namespace fs = std::filesystem;
+        const auto &DBPath = folder + DBName;
+        return fs::exists(DBPath) && fs::exists(DBPath + patExt) &&
+               fs::exists(DBPath + langExt) && fs::exists(DBPath + genreExt) &&
+               fs::exists(DBPath + devExt) && fs::exists(DBPath + pubExt) &&
+               fs::exists(DBPath + tagExt);
     }
 }

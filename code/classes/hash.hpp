@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <unordered_map>
+#include <fstream>
 
 namespace Tables
 {
@@ -20,6 +21,8 @@ namespace Tables
         std::vector<int> Search(const std::string &key);
         bool DeleteGame(const std::string &key, int Data);
         bool Delete(const std::string &key);
+        void Insert(const std::vector<std::string> &keys, int data);
+        int writeToFile(std::ofstream &file);
         friend std::ostream &operator<<(std::ostream &os, const Hash &table)
         {
             for(auto n : table.hashTable)

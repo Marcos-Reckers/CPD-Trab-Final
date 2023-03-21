@@ -54,4 +54,27 @@ namespace Tables
         return false;
     }
 
+    void Hash::Insert(const std::vector<std::string> &keys, int data)
+    {
+        for (auto item : keys)
+        {
+            if (item[0] == ' ' && item.size() > 1)
+                item = item.substr(1, item.size() - 1);
+            this->Insert(item, data);
+        }
+    }
+
+    int Hash::writeToFile(std::ofstream &file)
+    {
+        for (auto item : this->hashTable)
+        {
+            file << item.first << ":";
+            for (auto i : item.second)
+            {
+                file << i << " ";
+            }
+            file << std::endl;
+        }
+        return 0;
+    }
 }

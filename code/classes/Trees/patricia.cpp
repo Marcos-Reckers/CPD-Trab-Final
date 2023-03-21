@@ -133,6 +133,12 @@ namespace Trees
         return childrenData;
     }
 
+    int Patricia::writeToFile(std::ofstream &file)
+    {
+        file.write("PLACEHOLDER", 11);
+        return 0;
+    }
+
     void Patricia::clear()
     {
         for (auto child : this->root)

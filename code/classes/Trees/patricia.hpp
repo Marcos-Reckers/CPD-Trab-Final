@@ -30,7 +30,6 @@ namespace Trees
             Patricia::Node *Search(const std::string &Key);           // Search for a node in the children of the current node
             void clear();                                             // Remove all the children of the current node
             std::vector<int> GetChildrenData();                       // Get the data of all the children of the current node
-            // int writeSizeToFile(std::ofstream &file);
             // int writeToFile(std::ofstream &file);
             // int readFromFile(std::ifstream &file);
             friend std::ostream &operator<<(std::ostream &os, const Node &n)
@@ -62,7 +61,7 @@ namespace Trees
         Node *SearchNode(const std::string &Key);                 // Search for a node in the Patricia structure
         std::vector<int> SearchPrefix(const std::string &prefix); // Search for all the nodes in the Patricia structure that have the given prefix and return their data
         bool Delete(const std::string &key);                      // Remove a node from the Patricia structure
-        // int writeToFile(std::ofstream &file);
+        int writeToFile(std::ofstream &file);
         // int readFromFile(std::ifstream &file);
         friend std::ostream &operator<<(std::ostream &os, const Patricia &tree)
         {

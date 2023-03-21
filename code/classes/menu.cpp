@@ -18,7 +18,7 @@ namespace MENU
         return 0;
     }
 
-    int Convert(const std::vector<std::string> &args)
+    int ImpExp(const std::vector<std::string> &args)
     {
         if (args.size() < 3)
         {
@@ -29,11 +29,11 @@ namespace MENU
         auto imp = IO::importGames(args[1], std::stoi(args[2]));
         auto end = std::chrono::high_resolution_clock::now(); // Stop the timer.
 
-        std::cout << "Games imported: " << std::get<0>(imp).size() << std::endl;
+        std::cout << "Games imported: " << imp.size() << std::endl;
         std::cout << "Time to import: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " ms" << std::endl;
 
         begin = std::chrono::high_resolution_clock::now(); // Start the timer.
-        auto Bytes = IO::exportGames(DBPath, imp);
+        auto Bytes = IO::exportGames(IO::folder + IO::DBName, imp);
         end = std::chrono::high_resolution_clock::now(); // Stop the timer.
 
         std::cout << "Bytes exported: " << Bytes << " Bytes" << std::endl;
@@ -49,7 +49,7 @@ namespace MENU
             return HelpMessage();
         }
 
-        auto game = IO::getGame(DBPath, std::stoi(args[2]));
+        auto game = IO::getGame(IO::folder + IO::DBName, std::stoi(args[2]));
 
         if (game.getAppid() == 0)
         {
@@ -73,7 +73,7 @@ namespace MENU
 
         for (auto &gameID : gamesID)
         {
-            auto game = IO::getGame(DBPath, gameID);
+            auto game = IO::getGame(IO::folder + IO::DBName, gameID);
 
             if (game.getAppid() == 0)
             {
@@ -94,7 +94,7 @@ namespace MENU
         }
 
         auto game = DB::Game();
-        auto index = IO::appendGame(DBPath, game);
+        auto index = IO::appendGame(IO::folder + IO::DBName, game);
         if (index == 0)
         {
             std::cout << "Couldn't append game" << std::endl;
@@ -114,12 +114,27 @@ namespace MENU
         }
 
         auto begin = std::chrono::high_resolution_clock::now(); // Start the timer.
-        auto games = IO::loadGames(DBPath);
+        auto games = IO::loadGames(IO::folder + IO::DBName);
         auto end = std::chrono::high_resolution_clock::now(); // Stop the timer.
 
         std::cout << "Games loaded: " << games.size() << std::endl;
         std::cout << "Time to load: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " ms" << std::endl;
 
         return 0;
+    }
+
+    int Convert(const std::vector<std::string> &args)
+    {
+        if (args.size() < 3)
+        {
+            return HelpMessage();
+        }
+        auto begin = std::chrono::high_resolution_clock::now(); // Start the timer.
+        auto temp = IO::ConvertDatabase(args[1], std::stoi(args[2]));
+        auto end = std::chrono::high_resolution_clock::now(); // Stop the timer.
+
+        std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " ms" << std::endl;
+
+        return temp;
     }
 }
