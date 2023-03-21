@@ -9,9 +9,9 @@ namespace Tables
     {
     private:
         size_t size = 0;
-        std::unordered_map<std::string, std::vector<int>> hashTable;
 
     public:
+        std::unordered_map<std::string, std::vector<int>> hashTable;
         Hash();
         ~Hash();
         void clear();

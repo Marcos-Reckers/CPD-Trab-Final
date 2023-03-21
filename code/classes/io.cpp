@@ -2,6 +2,16 @@
 
 namespace IO
 {
+    void AddVecToTable(const std::string &str, Tables::Hash &Table, int Appid)
+    {
+        for (auto tag : STR::customSplit(str, ','))
+        {
+            if (tag[0] == ' ' && tag.size() > 1)
+                tag = tag.substr(1, tag.size() - 1);
+            Table.Insert(tag, Appid);
+        }
+    }
+
     GamesTuple importGames(const std::string &path, size_t limit)
     {
         std::vector<DB::Game> games;      // Vector of games to be returned.
@@ -51,35 +61,11 @@ namespace IO
 
             patricia.Insert(strings[nameIndex], game.getAppid());
 
-            for(auto tag : STR::customSplit(strings[popularTagsIndex], ',')) {
-                if(tag[0] == ' ' && tag.size() > 1)
-                    tag = tag.substr(1, tag.size() - 1);
-                popularTags.Insert(tag, game.getAppid());
-            }
-
-            for(auto lang : STR::customSplit(strings[languagesIndex], ',')) {
-                if(lang[0] == ' ' && lang.size() > 1)
-                    lang = lang.substr(1, lang.size() - 1);
-                languages.Insert(lang, game.getAppid());
-            }
-
-            for(auto genre : STR::customSplit(strings[genreIndex], ',')) {
-                if(genre[0] == ' ' && genre.size() > 1)
-                    genre = genre.substr(1, genre.size() - 1);
-                genres.Insert(genre, game.getAppid());
-            }
-
-            for(auto dev : STR::customSplit(strings[developerIndex], ',')) {
-                if(dev[0] == ' ' && dev.size() > 1)
-                    dev = dev.substr(1, dev.size() - 1);
-                developers.Insert(dev, game.getAppid());
-            }
-
-            for(auto pub : STR::customSplit(strings[publisherIndex], ',')) {
-                if(pub[0] == ' ' && pub.size() > 1)
-                    pub = pub.substr(1, pub.size() - 1);
-                publishers.Insert(pub, game.getAppid());
-            }
+            AddVecToTable(strings[popularTagsIndex], popularTags, game.getAppid());
+            AddVecToTable(strings[languagesIndex], languages, game.getAppid());
+            AddVecToTable(strings[genreIndex], genres, game.getAppid());
+            AddVecToTable(strings[developerIndex], developers, game.getAppid());
+            AddVecToTable(strings[publisherIndex], publishers, game.getAppid());
 
             // Add the game to the vector.
             games.push_back(game); // Add the game to the vector.
@@ -114,6 +100,47 @@ namespace IO
         }
 
         file.close();
+
+        // auto &patricia = std::get<1>(games);
+        // std::ofstream patriciaFile(path + ".patricia", std::ios::binary);
+        // patriciaFile << patricia << std::endl;
+        // patriciaFile.close();
+
+        auto &Hashes = std::get<2>(games);
+        std::ofstream langFile(path + ".lang", std::ios::binary);
+        for (auto lang : std::get<0>(Hashes).hashTable)
+        {
+            langFile << lang.first << std::endl;
+        }
+        langFile.close();
+
+        std::ofstream genreFile(path + ".genre", std::ios::binary);
+        for(auto genre : std::get<1>(Hashes).hashTable)
+        {
+            genreFile << genre.first << std::endl;
+        }
+        genreFile.close();
+
+        std::ofstream devFile(path + ".dev", std::ios::binary);
+        for(auto dev : std::get<2>(Hashes).hashTable)
+        {
+            devFile << dev.first << std::endl;
+        }
+        devFile.close();
+
+        std::ofstream pubFile(path + ".pub", std::ios::binary);
+        for(auto pub : std::get<3>(Hashes).hashTable)
+        {
+            pubFile << pub.first << std::endl;
+        }
+        pubFile.close();
+
+        std::ofstream tagFile(path + ".tag", std::ios::binary);
+        for(auto tag : std::get<4>(Hashes).hashTable)
+        {
+            tagFile << tag.first << std::endl;
+        }
+        tagFile.close();
 
         // patricia.writeToFile(path + ".patricia"); // Write the patricia tree to the file.
         // bplus.writeToFile(path + ".bplus");       // Write the bplus tree to the file.
