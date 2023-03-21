@@ -7,12 +7,14 @@
 #include <vector>
 #include <fstream>
 #include <cstdio>
+#include <tuple>
 
 
 namespace IO
 {
-    std::vector<DB::Game> importGames(const std::string &path, size_t limit = -1);
-    int exportGames(const std::string& path, const std::vector<DB::Game>& games);
+    typedef std::tuple<std::vector<DB::Game>, Trees::Patricia> GamesTuple; // Tuple of Games, Patricia Tree
+    GamesTuple importGames(const std::string &path, size_t limit = -1);
+    int exportGames(const std::string& path, const GamesTuple& games);
     DB::Game getGame(const std::string& path, size_t index);
     int appendGame(const std::string& path, DB::Game& game);
     std::vector<DB::Game> loadGames(const std::string& path);

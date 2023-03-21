@@ -2,19 +2,21 @@
 
 namespace IO
 {
-    std::vector<DB::Game> importGames(const std::string &path, size_t limit)
+    GamesTuple importGames(const std::string &path, size_t limit)
     {
         std::vector<DB::Game> games; // Vector of games to be returned.
+        Trees::Patricia patricia;    // Patricia tree to be returned.
+
         std::ifstream myfile;        // File to be read.
         myfile.open(path);           // Open the file.
 
         if (!myfile.is_open() || !myfile.good())
         {
             std::cout << "Error opening file" << std::endl;
-            return games;
+            return std::make_tuple(games, patricia);
         }
 
-        const int urlIndex = 0;         // Index of the url in the csv file.
+        const int urlIndex = 0;     // Index of the url in the csv file.
         const int nameIndex = 1;        // Index of the name in the csv file.
         const int reviewIndex = 2;      // Index of the review in the csv file.
         const int releaseDateIndex = 3; // Index of the release date in the csv file.
@@ -37,19 +39,22 @@ namespace IO
 
             // Add the tags to the game.
             const std::string tags = strings[popularTagsIndex] + ", " + strings[gameDetailsIndex] + ", " + strings[languagesIndex] + ", " + strings[genreIndex];
+            
+            DB::Game game(strings[urlIndex], strings[nameIndex], strings[developerIndex],
+                          strings[publisherIndex], strings[releaseDateIndex], tags,
+                          strings[priceIndex], strings[reviewIndex]);
+            patricia.Insert(strings[nameIndex], game.getAppid());
 
             // Add the game to the vector.
-            games.emplace_back(strings[urlIndex], strings[nameIndex], strings[developerIndex],
-                               strings[publisherIndex], strings[releaseDateIndex], tags,
-                               strings[priceIndex], strings[reviewIndex]); // Add the game to the vector.
+            games.push_back(game); // Add the game to the vector.
         }
 
         myfile.close();
 
-        return games;
+        return std::make_tuple(games, patricia);
     }
 
-    int exportGames(const std::string &path, const std::vector<DB::Game> &games)
+    int exportGames(const std::string &path, const GamesTuple &games)
     {
         std::ofstream file(path, std::ios::binary); // File to be written to.
         size_t Filesize = 0;                        // Size of the file.
@@ -66,7 +71,7 @@ namespace IO
             return -1;
         }
         
-        for (auto game : games)
+        for (auto game : std::get<0>(games))
         {
             Filesize += game.writeToFile(file); // Write the game to the file.
         }

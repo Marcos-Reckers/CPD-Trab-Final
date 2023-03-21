@@ -26,14 +26,14 @@ namespace MENU
         }
 
         auto begin = std::chrono::high_resolution_clock::now(); // Start the timer.
-        auto games = IO::importGames(args[1], std::stoi(args[2]));
+        auto imp = IO::importGames(args[1], std::stoi(args[2]));
         auto end = std::chrono::high_resolution_clock::now(); // Stop the timer.
 
-        std::cout << "Games imported: " << games.size() << std::endl;
+        std::cout << "Games imported: " << std::get<0>(imp).size() << std::endl;
         std::cout << "Time to import: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " ms" << std::endl;
 
         begin = std::chrono::high_resolution_clock::now(); // Start the timer.
-        auto Bytes = IO::exportGames(DBPath, games);
+        auto Bytes = IO::exportGames(DBPath, imp);
         end = std::chrono::high_resolution_clock::now(); // Stop the timer.
 
         std::cout << "Bytes exported: " << Bytes << " Bytes" << std::endl;
