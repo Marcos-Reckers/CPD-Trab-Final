@@ -1,129 +1,13 @@
 #pragma once
+#include "subclasses.hpp"
 #include <iostream>
 #include <string>
 #include <vector>
 #include <fstream>
 #include <array>
 
-namespace IO
-{
-    std::vector<std::string> customSplit(const std::string &str, char separator);
-}
-
 namespace DB
 {
-    enum class Reviews
-    {
-        Nan,
-        OverwhelminglyNegative,
-        VeryNegative,
-        Negative,
-        MostlyNegative,
-        Mixed,
-        MostlyPositive,
-        Positive,
-        VeryPositive,
-        OverwhelminglyPositive
-    };
-
-    Reviews StrToReviews(const std::string &reviews);
-    std::string ReviewsToStr(Reviews reviews);
-
-    enum class Months
-    {
-        Nan,
-        Jan,
-        Feb,
-        Mar,
-        Apr,
-        May,
-        Jun,
-        Jul,
-        Aug,
-        Sep,
-        Oct,
-        Nov,
-        Dec
-    };
-
-    class GamePrice
-    {
-    private:
-        int price;
-
-    public:
-        GamePrice(const std::string &price)
-        {
-            if (price.length() == 0)
-            {
-                this->price = -1;
-            }
-            else if (price[0] == '$')
-            {
-                this->price = static_cast<int>(std::stof(price.substr(1)) * 100);
-            }
-            else
-            {
-                this->price = 0;
-            }
-        };
-        int getPrice() { return price; };
-        friend std::ostream &operator<<(std::ostream &os, const GamePrice &price)
-        {
-            if (price.price == -1)
-            {
-                os << "NaN";
-                return os;
-            }
-            else if (price.price == 0)
-            {
-                os << "Free";
-                return os;
-            }
-            os << "$" << price.price / 100 << "." << price.price % 100;
-            return os;
-        };
-        std::string toStr()
-        {
-            if (price == -1)
-            {
-                return "NaN";
-            }
-            else if (price == 0)
-            {
-                return "Free";
-            }
-            return "$" + std::to_string(price / 100) + "." + std::to_string(price % 100);
-        }
-    };
-
-    class ReleaseDate
-    {
-    private:
-        int day;
-        Months month;
-        int year;
-        int decade;
-
-    public:
-        ReleaseDate(const std::string &date);
-        int getDay() { return day; };
-        Months getMonth() { return month; };
-        int getYear() { return year; };
-        int getDecade() { return decade; };
-        static Months StrToMonth(const std::string &month);
-        static std::string MonthToStr(Months month);
-        friend std::ostream &operator<<(std::ostream &os, const ReleaseDate &release)
-        {
-            os << MonthToStr(release.month) << " " << release.day << ", " << release.year;
-            return os;
-        };
-        std::string toStr()
-        {
-            return MonthToStr(month) + " " + std::to_string(day) + ", " + std::to_string(year);
-        }
-    };
-
     class Game
     {
     private:
@@ -148,6 +32,8 @@ namespace DB
         std::string getTags() { return tags; };
         int getPrice() { return price.getPrice(); };
         Reviews getReviews() { return reviews; };
+        int writeToFile(std::ofstream &file);
+        bool readFromFile(std::ifstream &file, int Index);
         friend std::ostream &operator<<(std::ostream &os, const Game &game)
         {
             os << "AppID: " << game.appid << " Name: " << game.name
@@ -156,7 +42,5 @@ namespace DB
                << " Price: " << game.price << " Reviews: " << ReviewsToStr(game.reviews);
             return os;
         };
-        int writeToFile(std::ofstream &file);
-        bool readFromFile(std::ifstream &file, int Index);
     };
 }

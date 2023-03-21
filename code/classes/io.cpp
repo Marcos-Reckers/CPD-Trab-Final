@@ -2,25 +2,6 @@
 
 namespace IO
 {
-    std::vector<std::string> customSplit(const std::string &str, char separator)
-    {
-        std::vector<std::string> strings; // Vector of strings to be returned.
-        int startIndex = 0, endIndex = 0; // Start and end index of the word.
-        for (size_t i = 0; i <= str.size(); i++)
-        {
-            // If we reached the end of the word or the end of the input.
-            if (str[i] == separator || i == str.size())
-            {
-                endIndex = i;                                        // Set the end index to the current index.
-                std::string temp;                                    // Temp string to be added to the vector.
-                temp.append(str, startIndex, endIndex - startIndex); // Add the word to the string.
-                strings.push_back(temp);                             // Add the string to the vector.
-                startIndex = endIndex + 1;                           // Set the start index to the next word.
-            }
-        }
-        return strings;
-    }
-
     std::vector<DB::Game> importGames(const std::string &path, size_t limit)
     {
         std::vector<DB::Game> games; // Vector of games to be returned.
@@ -52,7 +33,7 @@ namespace IO
         while (!myfile.eof() && games.size() < limit) // While we haven't reached the end of the file.
         {
             std::getline(myfile, line);                // Read the next line.
-            auto strings = IO::customSplit(line, ';'); // Split the line into a vector of strings.
+            auto strings = STR::customSplit(line, ';'); // Split the line into a vector of strings.
 
             // Add the tags to the game.
             const std::string tags = strings[popularTagsIndex] + ", " + strings[gameDetailsIndex] + ", " + strings[languagesIndex] + ", " + strings[genreIndex];
@@ -114,5 +95,42 @@ namespace IO
         DB::Game game; // Game to be returned.
 
         return game.readFromFile(file, index) ? game : DB::Game(); // Read the game from the file.
+    }
+
+    int appendGame(const std::string &path, DB::Game &game)
+    {
+        std::ofstream file(path, std::ios::binary | std::ios::app); // File to be written to.
+
+        if (!file.is_open())
+        {
+            std::cout << "Error opening file" << std::endl;
+            return 0;
+        }
+
+        if (!file.good())
+        {
+            std::cout << "Error writing to file" << std::endl;
+            return 0;
+        }
+
+        auto size = game.writeToFile(file); // Write the game to the file.
+
+        file.close();
+
+        std::ifstream file2(path, std::ifstream::ate | std::ifstream::binary);
+
+        if (!file2.is_open())
+        {
+            std::cout << "Error opening file" << std::endl;
+            return 0;
+        }
+
+        if (!file2.good())
+        {
+            std::cout << "Error writing to file" << std::endl;
+            return 0;
+        }
+
+        return file2.tellg() / size;
     }
 }
