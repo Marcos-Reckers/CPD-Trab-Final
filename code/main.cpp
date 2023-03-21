@@ -33,6 +33,10 @@ int main(int argc, char *argv[])
     {
         return MENU::Append(args);
     }
+    case 'l':
+    {
+        return MENU::Load(args);
+    }
     default:
     {
         return MENU::HelpMessage();

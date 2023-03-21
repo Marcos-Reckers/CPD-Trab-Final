@@ -70,7 +70,7 @@ namespace Trees
             {
                 // key e child tem uma substring em comum
                 // bolo -> bola
-                auto newNode = new Node(key.substr(i, key.length() -i), Data);
+                auto newNode = new Node(key.substr(i, key.length() - i), Data);
                 auto newNode1 = new Node(*child);
                 newNode1->key = child->key.substr(i, child->key.length() - i);
                 child->key = key.substr(0, i);
@@ -215,7 +215,7 @@ namespace Trees
         // nao e substring de nenhum filho
         auto newNode = new Node(key, Data);
         this->root.push_back(newNode); // Add the new node as a child of the root
-        return newNode;                    // Return the new node
+        return newNode;                // Return the new node
     }
 
     Patricia::Node *Patricia::SearchNode(const std::string &Key)
@@ -264,4 +264,83 @@ namespace Trees
         toDelete->data = -1;                   // Set the data of the node to delete to -1
         return true;                           // Return true because the operation succeeded
     }
+
+    // int Patricia::Node::writeSizeToFile(std::ofstream &file)
+    // {
+    //     int size = 0;
+    //     file.write((char *)this->children.size(), sizeof(this->children.size()));
+    //     size += sizeof(this->children.size());
+
+    //     for(auto child : this->children)
+    //     {
+    //         size += child->writeSizeToFile(file);
+    //     }
+
+    //     return size;
+    // }
+
+    // int Patricia::Node::writeToFile(std::ofstream &file)
+    // {
+
+    //     int size = 0;
+    
+    //     file.write((char *)&this->key, sizeof(this->key));
+    //     file.write((char *)&this->data, sizeof(this->data));
+    //     size += sizeof(this->key) + sizeof(this->data);
+
+    //     for (auto child : this->children)
+    //     {
+    //         size += child->writeToFile(file);
+    //     }
+    //     return size;
+    // }
+
+    // int Patricia::writeToFile(std::ofstream &file)
+    // {
+    //     int size = 0;
+    //     file.write((char*)this->size, sizeof(this->size));
+    //     size += sizeof(this->size);
+    //     file.write((char*)this->root.size(), sizeof(this->root.size()));
+    //     size += sizeof(this->root.size());
+
+    //     for (auto child : this->root)
+    //     {
+    //         size += child->writeSizeToFile(file);
+    //     }
+
+    //     for (auto child : this->root)
+    //     {
+    //         size += child->writeToFile(file);
+    //     }
+
+    //     return size;
+    // }
+
+    // int Patricia::Node::readFromFile(std::ifstream &file)
+    // {
+    //     int size = 0;
+    //     std::string key;
+    //     int data;
+    //     while (file.read((char *)&key, sizeof(key)))
+    //     {
+    //         file.read((char *)&data, sizeof(data));
+    //         this->Insert(key, data);
+    //         size += sizeof(key) + sizeof(data);
+    //     }
+    //     return size;
+    // }
+
+    // int Patricia::readFromFile(std::ifstream &file)
+    // {
+    //     int size = 0;
+    //     std::string key;
+    //     int data;
+    //     while (file.read((char *)&key, sizeof(key)))
+    //     {
+    //         file.read((char *)&data, sizeof(data));
+    //         this->Insert(key, data);
+    //         size += sizeof(key) + sizeof(data);
+    //     }
+    //     return size;
+    // }
 }

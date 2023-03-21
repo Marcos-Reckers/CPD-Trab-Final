@@ -32,7 +32,7 @@ namespace IO
 
         while (!myfile.eof() && games.size() < limit) // While we haven't reached the end of the file.
         {
-            std::getline(myfile, line);                // Read the next line.
+            std::getline(myfile, line);                 // Read the next line.
             auto strings = STR::customSplit(line, ';'); // Split the line into a vector of strings.
 
             // Add the tags to the game.
@@ -65,7 +65,7 @@ namespace IO
             std::cout << "Error writing to file" << std::endl;
             return -1;
         }
-
+        
         for (auto game : games)
         {
             Filesize += game.writeToFile(file); // Write the game to the file.
@@ -73,6 +73,8 @@ namespace IO
 
         file.close();
 
+        // patricia.writeToFile(path + ".patricia"); // Write the patricia tree to the file.
+        // bplus.writeToFile(path + ".bplus");       // Write the bplus tree to the file.
         return Filesize;
     }
 
@@ -132,5 +134,34 @@ namespace IO
         }
 
         return file2.tellg() / size;
+    }
+
+    std::vector<DB::Game> loadGames(const std::string &path)
+    {
+        std::ifstream file(path, std::ios::binary); // File to be read.
+
+        if (!file.is_open())
+        {
+            std::cout << "Error opening file" << std::endl;
+            return std::vector<DB::Game>();
+        }
+
+        if (!file.good())
+        {
+            std::cout << "Error reading from file" << std::endl;
+            return std::vector<DB::Game>();
+        }
+
+        std::vector<DB::Game> games; // Game to be returned.
+
+        for(size_t i = 0; !file.eof(); i++)
+        {
+            DB::Game game; // Game to be returned.
+
+            game.readFromFile(file, i); // Read the game from the file.
+            games.push_back(game);
+        }
+
+        return games; // Read the game from the file.
     }
 }

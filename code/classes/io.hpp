@@ -1,6 +1,7 @@
 #pragma once
 #include "strings.hpp"
 #include "game.hpp"
+#include "Trees/patricia.hpp"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -14,4 +15,5 @@ namespace IO
     int exportGames(const std::string& path, const std::vector<DB::Game>& games);
     DB::Game getGame(const std::string& path, size_t index);
     int appendGame(const std::string& path, DB::Game& game);
+    std::vector<DB::Game> loadGames(const std::string& path);
 }

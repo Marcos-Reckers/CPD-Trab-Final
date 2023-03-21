@@ -105,4 +105,21 @@ namespace MENU
         std::cout << "Game Index: " << index << std::endl;
         return 0;
     }
+
+    int Load(const std::vector<std::string> &args)
+    {
+        if (args.size() < 1)
+        {
+            return HelpMessage();
+        }
+
+        auto begin = std::chrono::high_resolution_clock::now(); // Start the timer.
+        auto games = IO::loadGames(DBPath);
+        auto end = std::chrono::high_resolution_clock::now(); // Stop the timer.
+
+        std::cout << "Games loaded: " << games.size() << std::endl;
+        std::cout << "Time to load: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " ms" << std::endl;
+
+        return 0;
+    }
 }
