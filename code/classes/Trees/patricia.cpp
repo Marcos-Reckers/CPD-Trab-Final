@@ -135,7 +135,7 @@ namespace Trees
 
     int Patricia::writeToFile(std::ofstream &file)
     {
-        file.write("PLACEHOLDER", 11);
+        file << *this;
         return 0;
     }
 

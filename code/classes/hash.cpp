@@ -66,15 +66,7 @@ namespace Tables
 
     int Hash::writeToFile(std::ofstream &file)
     {
-        for (auto item : this->hashTable)
-        {
-            file << item.first << ":";
-            for (auto i : item.second)
-            {
-                file << i << " ";
-            }
-            file << std::endl;
-        }
+        file << *this;
         return 0;
     }
 }

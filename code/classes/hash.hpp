@@ -27,7 +27,7 @@ namespace Tables
         {
             for(auto n : table.hashTable)
             {
-                os << "Key: " << n.first << " Data: ";
+                os << n.first << ":";
                 for(auto i : n.second)
                 {
                     os << i << " ";
