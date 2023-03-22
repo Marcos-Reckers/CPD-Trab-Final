@@ -241,4 +241,30 @@ namespace IO
                fs::exists(DBPath + devExt) && fs::exists(DBPath + pubExt) &&
                fs::exists(DBPath + tagExt);
     }
+
+    std::vector<int> findInHash(const std::string &path, const std::string &key)
+    {
+        std::vector<int> appids;
+        std::string line;
+        std::ifstream file(path, std::ios::binary);
+        if (!file.good())
+            return appids;
+
+
+        while(!file.eof())
+        {
+            std::getline(file, line);
+            if(line.starts_with(key))
+            {
+                auto ids = STR::customSplit(line, ',');
+                for(auto id : ids)
+                {
+                    appids.push_back(std::stoi(id));
+                }
+                return appids;
+            }
+        }
+
+        return appids;
+    }
 }
