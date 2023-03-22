@@ -65,4 +65,52 @@ namespace STR
         }
         return vector;
     }
+
+    template <>
+    std::vector<int> vectorFromList<int>(const std::string &str)
+    {
+        std::vector<int> vector;                         // Vector to be returned.
+        std::string Str = str.substr(1, str.size() - 2); // Removes '[' and ']'
+        auto Strs = customSplit(Str, ',');               // Split the string by ','
+
+        for (auto &String : Strs)
+        {
+            if (String[0] == ' ')
+                String = String.substr(1, String.size()); // Remove the first space
+            vector.push_back(String.length() ? std::stoi(String) : -1);
+        }
+        return vector;
+    }
+
+    template <>
+    std::vector<std::string> vectorFromList<std::string>(const std::string &str)
+    {
+        std::vector<std::string> vector;                 // Vector to be returned.
+        std::string Str = str.substr(1, str.size() - 2); // Removes '[' and ']'
+        auto Strs = customSplit(Str, ',');               // Split the string by ','
+
+        for (auto &String : Strs)
+        {
+            if (String[0] == ' ')
+                String = String.substr(1, String.size()); // Remove the first space
+            vector.push_back(String);
+        }
+        return vector;
+    }
+
+    template <>
+    std::vector<bool> vectorFromList<bool>(const std::string &str)
+    {
+        std::vector<bool> vector;                        // Vector to be returned.
+        std::string Str = str.substr(1, str.size() - 2); // Removes '[' and ']'
+        auto Strs = customSplit(Str, ',');               // Split the string by ','
+
+        for (auto &String : Strs)
+        {
+            if (String[0] == ' ')
+                String = String.substr(1, String.size()); // Remove the first space
+            vector.push_back(String == "True");
+        }
+        return vector;
+    }
 }

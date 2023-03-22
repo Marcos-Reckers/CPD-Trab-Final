@@ -129,11 +129,11 @@ namespace IO
         //! Imports the Data
         std::vector<DB::Game> games; // Vector of games
         Trees::Patricia patricia;    // Patricia tree
-        Tables::Hash languages;      // Hash table of languages.
-        Tables::Hash genres;         // Hash table of genres.
-        Tables::Hash developers;     // Hash table of developers.
-        Tables::Hash publishers;     // Hash table of publishers.
-        Tables::Hash popularTags;    // Hash table of popular tags.
+        Tables::Hash<std::string> languages;      // Hash table of languages.
+        Tables::Hash<std::string> genres;         // Hash table of genres.
+        Tables::Hash<std::string> developers;     // Hash table of developers.
+        Tables::Hash<std::string> publishers;     // Hash table of publishers.
+        Tables::Hash<std::string> popularTags;    // Hash table of popular tags.
 
         //* Open the input file
         std::ifstream input(path); // File to be read.

@@ -69,7 +69,7 @@ namespace MENU
             return HelpMessage();
         }
 
-        auto gamesID = STR::vectorFromListInt(args[2]);
+        auto gamesID = STR::vectorFromList<int>(args[2]);
 
         for (auto &gameID : gamesID)
         {
@@ -168,17 +168,16 @@ namespace MENU
 
         // offset 4 to remove the "gen=" part
 
-        auto genres = STR::vectorFromListStr(strings[0].substr(4));
-        auto languages = STR::vectorFromListStr(strings[1].substr(4));
-        auto tags = STR::vectorFromListStr(strings[2].substr(4));
-        auto dates = STR::vectorFromListInt(strings[3].substr(4));
-        auto developers = STR::vectorFromListStr(strings[4].substr(4));
-        auto publishers = STR::vectorFromListStr(strings[5].substr(4));
-        std::cout << strings[8].substr(4).length() << std::endl;
+        auto genres = STR::vectorFromList<std::string>(strings[0].substr(4));
+        auto languages = STR::vectorFromList<std::string>(strings[1].substr(4));
+        auto tags = STR::vectorFromList<std::string>(strings[2].substr(4));
+        auto dates = STR::vectorFromList<int>(strings[3].substr(4));
+        auto developers = STR::vectorFromList<std::string>(strings[4].substr(4));
+        auto publishers = STR::vectorFromList<std::string>(strings[5].substr(4));
         auto minPrice = std::stof(strings[6].substr(4));
         auto maxPrice = std::stof(strings[7].substr(4));
         auto decade = strings[8].substr(4).length() ? std::stoi(strings[8].substr(4)) : -1;
-        auto reviews = STR::vectorFromListBool(strings[9].substr(4));
+        auto reviews = STR::vectorFromList<bool>(strings[9].substr(4));
         auto gameID = strings[10].substr(4).length() ? std::stoi(strings[10].substr(4)) : -1;
         auto name = strings[11].substr(4);
 
