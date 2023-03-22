@@ -22,4 +22,6 @@ namespace MENU
     int Convert(const std::vector<std::string> &args);
 
     int Search(const std::vector<std::string> &args);
+
+    int Validate(const std::vector<std::string> &args);
 }

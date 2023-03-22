@@ -232,6 +232,9 @@ namespace IO
     bool databaseExists()
     {
         namespace fs = std::filesystem;
+        if (!fs::is_directory(folder))
+            return false;
+
         const auto &DBPath = folder + DBName;
         return fs::exists(DBPath) && fs::exists(DBPath + patExt) &&
                fs::exists(DBPath + langExt) && fs::exists(DBPath + genreExt) &&

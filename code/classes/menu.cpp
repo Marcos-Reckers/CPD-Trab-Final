@@ -197,4 +197,16 @@ namespace MENU
 
         return 0;
     }
+
+    int Validate(const std::vector<std::string> &args)
+    {
+        if (args.size() < 2)
+        {
+            return HelpMessage();
+        }
+
+        std::cout << IO::databaseExists() << std::endl;
+
+        return 0;
+    }
 }

@@ -2,7 +2,7 @@
 
 int main(int argc, char *argv[])
 {
-    if (argc < 2)
+    if (argc < 1)
     {
         return MENU::HelpMessage();
     }
@@ -19,6 +19,10 @@ int main(int argc, char *argv[])
     else if (args[0][1] == 'c')
     {
         return MENU::Convert(args);
+    }
+    else if(args[0][1] == 'v')
+    {
+        return MENU::Validate(args);
     }
 
     if(!IO::databaseExists())
@@ -40,10 +44,6 @@ int main(int argc, char *argv[])
     case 'a':
     {
         return MENU::Append(args);
-    }
-    case 'l':
-    {
-        return MENU::Load(args);
     }
     default:
     {
