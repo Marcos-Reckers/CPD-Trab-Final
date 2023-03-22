@@ -5,7 +5,7 @@ namespace MENU
     int HelpMessage()
     {
         std::cout << "Use -h to see commands" << std::endl;
-        return 1;
+        return -1;
     }
 
     int Help(const std::vector<std::string> &args)
@@ -13,8 +13,9 @@ namespace MENU
         std::cout << "Commands:" << std::endl;
         std::cout << "-c <importPath> <limit> - Imports games from a csv file to binary files (-1 for all)" << std::endl;
         std::cout << "-g <Index> - Searches a game from a binary file" << std::endl;
-        std::cout << "-s [<Index>, <Index>] - Searches for a game in a binary file" << std::endl;
+        std::cout << "-s <Attributes> - Searches for games in a binary file" << std::endl;
         std::cout << "-a <game> - Appends a game to a binary file" << std::endl;
+        std::cout << "-v - Validates if all the data is in place" << std::endl;
         return 0;
     }
 
@@ -200,13 +201,13 @@ namespace MENU
 
     int Validate(const std::vector<std::string> &args)
     {
-        if (args.size() < 2)
+        if (args.size() < 1)
         {
             return HelpMessage();
         }
 
-        std::cout << IO::databaseExists() << std::endl;
+        std::cout << IO::databaseExists();
 
-        return 0;
+        return IO::databaseExists();
     }
 }
