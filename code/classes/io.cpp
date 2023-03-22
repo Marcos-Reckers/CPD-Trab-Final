@@ -149,8 +149,7 @@ namespace IO
         {
             std::getline(input, line);                  // Read the next line.
             auto strings = STR::customSplit(line, ';'); // Split the line into a vector of strings.
-            if(strings.size() != 11)
-                std::cout << strings.size() << ' ' << strings[nameIndex] << ' ' << games.size() << std::endl; //! Debug
+            
             // Add the tags to the game.
             const std::string tags = strings[popularTagsIndex] + ", " + strings[gameDetailsIndex] + ", " + strings[languagesIndex] + ", " + strings[genreIndex];
 
