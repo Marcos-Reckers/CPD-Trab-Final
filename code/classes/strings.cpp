@@ -31,7 +31,7 @@ namespace STR
         {
             if (String[0] == ' ')
                 String = String.substr(1, String.size()); // Remove the first space
-            vector.push_back(std::stoi(String));
+            vector.push_back(String.length() ? std::stoi(String) : -1);
         }
         return vector;
     }

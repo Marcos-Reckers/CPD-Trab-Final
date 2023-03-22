@@ -142,9 +142,11 @@ namespace MENU
     void print(const std::vector<T> &vec, const std::string &name)
     {
         std::cout << name << ": ";
+        bool first = true;
         for (auto item : vec)
         {
-            std::cout << item << ", ";
+            first ? std::cout << item : std::cout << ", " << item;
+            first = false;
         }
         std::cout << std::endl;
     }
@@ -158,7 +160,7 @@ namespace MENU
 
         // GUI TEST CASES
         // gen=['Accounting'];lan=['Arabic'];tag=['1980s'];dat=[1960];dev=['(Miwashiba)'];pub=['!Lim studio'];min=43.33;max=416.67;dec=1970;rev=[True, True, True, True, True, True, True, True, True];gid=123214;nam=BAHA
-        // gen=[];lan=[];tag=[];dat=[];dev=[];pub=[];min=0.0;max=500.0;dec=1970;rev=[False, False, False, False, False, False, False, False, False];gid=;nam=
+        // gen=[];lan=[];tag=[];dat=[];dev=[];pub=[];min=0.0;max=500.0;dec=;rev=[False, False, False, False, False, False, False, False, False];gid=;nam=
         // gen=['Accounting', 'Action'];lan=['Arabic', 'Bulgarian'];tag=['1980s', "1990's"];dat=[1960, 1961];dev=['(Miwashiba)', ' Alexander Cobleigh'];pub=['!Lim studio', '#workshop'];min=26.67;max=480.0;dec=1970;rev=[True, True, True, True, True, True, True, True, True];gid=123123;nam=baha
 
         auto &search = args[1];
@@ -172,11 +174,12 @@ namespace MENU
         auto dates = STR::vectorFromListInt(strings[3].substr(4));
         auto developers = STR::vectorFromListStr(strings[4].substr(4));
         auto publishers = STR::vectorFromListStr(strings[5].substr(4));
+        std::cout << strings[8].substr(4).length() << std::endl;
         auto minPrice = std::stof(strings[6].substr(4));
         auto maxPrice = std::stof(strings[7].substr(4));
-        auto decade = std::stoi(strings[8].substr(4));
+        auto decade = strings[8].substr(4).length() ? std::stoi(strings[8].substr(4)) : -1;
         auto reviews = STR::vectorFromListBool(strings[9].substr(4));
-        auto gameID = std::stoi(strings[10].substr(4));
+        auto gameID = strings[10].substr(4).length() ? std::stoi(strings[10].substr(4)) : -1;
         auto name = strings[11].substr(4);
 
         //! Debug, seeing for the correct substrings
