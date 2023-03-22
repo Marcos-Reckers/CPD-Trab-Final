@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
     }
 
     std::vector<std::string> args;
-    
+
     for (int i = 1; i < argc; i++)
         args.emplace_back(argv[i]);
 
@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
     }
     case 's':
     {
-        return MENU::Set(args);
+        return MENU::Search(args);
     }
     case 'a':
     {

@@ -20,4 +20,6 @@ namespace MENU
     int Load(const std::vector<std::string> &args);
 
     int Convert(const std::vector<std::string> &args);
+
+    int Search(const std::vector<std::string> &args);
 }

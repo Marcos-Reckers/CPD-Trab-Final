@@ -137,4 +137,62 @@ namespace MENU
 
         return temp;
     }
+
+    template <typename T>
+    void print(const std::vector<T> &vec, const std::string &name)
+    {
+        std::cout << name << ": ";
+        for (auto item : vec)
+        {
+            std::cout << item << ", ";
+        }
+        std::cout << std::endl;
+    }
+
+    int Search(const std::vector<std::string> &args)
+    {
+        if (args.size() < 2)
+        {
+            return HelpMessage();
+        }
+
+        // GUI TEST CASES
+        // gen=['Accounting'];lan=['Arabic'];tag=['1980s'];dat=[1960];dev=['(Miwashiba)'];pub=['!Lim studio'];min=43.33;max=416.67;dec=1970;rev=[True, True, True, True, True, True, True, True, True];gid=123214;nam=BAHA
+        // gen=[];lan=[];tag=[];dat=[];dev=[];pub=[];min=0.0;max=500.0;dec=1970;rev=[False, False, False, False, False, False, False, False, False];gid=;nam=
+        // gen=['Accounting', 'Action'];lan=['Arabic', 'Bulgarian'];tag=['1980s', "1990's"];dat=[1960, 1961];dev=['(Miwashiba)', ' Alexander Cobleigh'];pub=['!Lim studio', '#workshop'];min=26.67;max=480.0;dec=1970;rev=[True, True, True, True, True, True, True, True, True];gid=123123;nam=baha
+
+        auto &search = args[1];
+        auto strings = STR::customSplit(search, ';');
+
+        // offset 4 to remove the "gen=" part
+
+        auto genres = STR::vectorFromListStr(strings[0].substr(4));
+        auto languages = STR::vectorFromListStr(strings[1].substr(4));
+        auto tags = STR::vectorFromListStr(strings[2].substr(4));
+        auto dates = STR::vectorFromListInt(strings[3].substr(4));
+        auto developers = STR::vectorFromListStr(strings[4].substr(4));
+        auto publishers = STR::vectorFromListStr(strings[5].substr(4));
+        auto minPrice = std::stoi(strings[6].substr(4));
+        auto maxPrice = std::stoi(strings[7].substr(4));
+        auto decade = std::stoi(strings[8].substr(4));
+        auto reviews = STR::vectorFromListBool(strings[9].substr(4));
+        auto gameID = std::stoi(strings[10].substr(4));
+        auto name = strings[11].substr(4);
+
+        //! Debug, seeing for the correct substrings
+        print(genres, "Genres");
+        print(languages, "Languages");
+        print(tags, "Tags");
+        print(dates, "Dates");
+        print(developers, "Developers");
+        print(publishers, "Publishers");
+        std::cout << "Min Price: " << minPrice << std::endl;
+        std::cout << "Max Price: " << maxPrice << std::endl;
+        std::cout << "Decade: " << decade << std::endl;
+        print(reviews, "Reviews");
+        std::cout << "Game ID: " << gameID << std::endl;
+        std::cout << "Name: " << name << std::endl;
+
+        return 0;
+    }
 }
