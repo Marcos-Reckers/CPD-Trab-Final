@@ -172,8 +172,8 @@ namespace MENU
         auto dates = STR::vectorFromListInt(strings[3].substr(4));
         auto developers = STR::vectorFromListStr(strings[4].substr(4));
         auto publishers = STR::vectorFromListStr(strings[5].substr(4));
-        auto minPrice = std::stoi(strings[6].substr(4));
-        auto maxPrice = std::stoi(strings[7].substr(4));
+        auto minPrice = std::stof(strings[6].substr(4));
+        auto maxPrice = std::stof(strings[7].substr(4));
         auto decade = std::stoi(strings[8].substr(4));
         auto reviews = STR::vectorFromListBool(strings[9].substr(4));
         auto gameID = std::stoi(strings[10].substr(4));
