@@ -24,4 +24,6 @@ namespace MENU
     int Search(const std::vector<std::string> &args);
 
     int Validate(const std::vector<std::string> &args);
+
+    int GetField(const std::vector<std::string> &args);
 }

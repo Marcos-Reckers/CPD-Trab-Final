@@ -3,6 +3,7 @@
 #include <vector>
 #include <unordered_map>
 #include <fstream>
+#include <sstream>
 
 namespace Tables
 {
@@ -79,7 +80,7 @@ namespace Tables
         {
             for (auto n : table.hashTable)
             {
-                os << n.first << ":";
+                os << n.first << ";";
                 for (auto i : n.second)
                 {
                     os << i << " ";
@@ -87,6 +88,21 @@ namespace Tables
                 os << std::endl;
             }
             return os;
+        }
+
+        std::vector<std::string> GetKeys()
+        {
+            std::vector<std::string> keys;
+
+            for (auto n : this->hashTable)
+            {
+                std::stringstream ss;
+
+                ss << n.first;
+                keys.push_back(ss.str());
+            }
+
+            return keys;
         }
     };
 

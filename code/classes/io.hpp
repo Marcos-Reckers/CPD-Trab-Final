@@ -42,4 +42,5 @@ namespace IO
     int ConvertDatabase(const std::string& path, size_t limit = -1);
     bool databaseExists();
     std::vector<int> findInHash(const std::string& path, const std::string& key);
+    std::vector<std::string> getKeys(std::ifstream& file);
 }

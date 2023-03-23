@@ -267,4 +267,17 @@ namespace IO
 
         return appids;
     }
+
+    std::vector<std::string> getKeys(std::ifstream &file)
+    {
+        std::vector<std::string> keys;
+        std::string line;
+        while(!file.eof())
+        {
+            std::getline(file, line);
+            auto end = line.find_first_of(';');
+            keys.push_back(line.substr(0, end));
+        }
+        return keys;
+    }
 }

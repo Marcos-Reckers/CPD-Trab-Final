@@ -34,7 +34,7 @@ namespace Trees
             // int readFromFile(std::ifstream &file);
             friend std::ostream &operator<<(std::ostream &os, const Node &n)
             {
-                os << "Key: " << n.key << " Data: " << n.data;
+                os << n.key << ";" <<  n.children.size() <<";" << n.data;
                 return os;
             }
             void print(std::ostream &os, size_t i = 0)

@@ -45,6 +45,10 @@ int main(int argc, char *argv[])
     {
         return MENU::Append(args);
     }
+    case 'f':
+    {
+        return MENU::GetField(args);
+    }
     default:
     {
         return MENU::HelpMessage();

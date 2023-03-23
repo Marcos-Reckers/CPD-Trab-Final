@@ -16,6 +16,7 @@ namespace MENU
         std::cout << "-s <Attributes> - Searches for games in a binary file" << std::endl;
         std::cout << "-a <game> - Appends a game to a binary file" << std::endl;
         std::cout << "-v - Validates if all the data is in place" << std::endl;
+        std::cout << "-f <Name> - Gets all keys from a particular structure" << std::endl;
         return 0;
     }
 
@@ -209,5 +210,81 @@ namespace MENU
         std::cout << IO::databaseExists();
 
         return IO::databaseExists();
+    }
+
+    int outputKeys(const std::vector<std::string>& keys)
+    {
+        for (auto key : keys)
+        {
+            std::cout << key << ";";
+        }
+        std::cout << std::endl;
+        return 0;
+    }
+    
+    int GetField(const std::vector<std::string> &args)
+    {
+        if (args.size() < 2)
+        {
+            return HelpMessage();
+        }
+
+        auto &field = args[1];
+
+        std::ifstream file;
+
+        switch (field[0])
+        {
+        case 'd':
+        {
+            // dev hash keys
+            file.open(IO::folder + IO::DBName + IO::devExt, std::ios::binary);
+            return outputKeys(IO::getKeys(file));
+        }
+        case 'g':
+        {
+            // genre hash keys
+            file.open(IO::folder + IO::DBName + IO::genreExt, std::ios::binary);
+            return outputKeys(IO::getKeys(file));
+        }
+        case 'l':
+        {
+            // language hash keys
+            file.open(IO::folder + IO::DBName + IO::langExt, std::ios::binary);
+            return outputKeys(IO::getKeys(file));
+        }
+        case 't':
+        {
+            // tag hash keys
+            file.open(IO::folder + IO::DBName + IO::tagExt, std::ios::binary);
+            return outputKeys(IO::getKeys(file));
+        }
+        case 'p':
+        {
+            switch (field[1])
+            {
+            case 'u':
+            {
+                // publisher hash keys
+                file.open(IO::folder + IO::DBName + IO::pubExt, std::ios::binary);
+                return outputKeys(IO::getKeys(file));
+            }
+            case 'a':
+            {
+                // file.open(IO::folder + IO::DBName + IO::patExt, std::ios::binary);
+                // return outputKeys(IO::getKeys(file));
+                std::cout << "Not implemented yet" << std::endl;
+            }
+            default:
+            {
+                return HelpMessage();
+            }
+            }
+        }
+        default:
+        {
+            return HelpMessage();
+        }
+        }
     }
 }
