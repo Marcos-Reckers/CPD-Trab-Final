@@ -212,13 +212,13 @@ namespace MENU
         return IO::databaseExists();
     }
 
-    int outputKeys(const std::vector<std::string> &keys, std::ofstream& out)
+    int outputKeys(const std::vector<std::string> &keys)
     {
         for (auto key : keys)
         {
-            out << key << ";";
+            std::cout << key << ";";
         }
-        out << std::endl;
+        std::cout << std::endl;
         return 0;
     }
 
@@ -232,12 +232,6 @@ namespace MENU
         auto &field = args[1];
 
         std::ifstream file;
-        std::ofstream out(IO::folder + IO::DBName + ".out", std::ios::binary);
-        if(!out.good())
-        {
-            std::cout << "Error opening output file" << std::endl;
-            return 1;
-        }
 
         switch (field[0])
         {
@@ -276,8 +270,12 @@ namespace MENU
         default:
             return HelpMessage();
         }
+        
+        if (!file.good())
+            return 1;
+
+        auto keys = IO::getKeys(file);
         file.close();
-        out.close();
-        return outputKeys(IO::getKeys(file), out);
+        return outputKeys(keys);
     }
 }
