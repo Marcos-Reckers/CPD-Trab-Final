@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <fstream>
 #include <sstream>
+#include "strings.hpp"
 
 namespace Tables
 {
@@ -15,7 +16,12 @@ namespace Tables
 
     public:
         std::unordered_map<T, std::vector<int>> hashTable;
-        Hash() { this->hashTable = std::unordered_map<std::string, std::vector<int>>(); }
+        Hash() { this->hashTable = std::unordered_map<T, std::vector<int>>(); }
+        Hash(std::ifstream &file)
+        {
+            this->hashTable = std::unordered_map<T, std::vector<int>>();
+            this->readFromFile(file);
+        }
         ~Hash() { this->hashTable.clear(); }
         void clear() { this->hashTable.clear(); }
         size_t Size() { return this->hashTable.size(); }
@@ -76,6 +82,29 @@ namespace Tables
             file << *this;
             return 0;
         }
+
+        int readFromFile(std::ifstream &file)
+        {
+            this->clear();
+            std::string line;
+            while (std::getline(file, line))
+            {
+                std::stringstream ss(line);
+                std::string key;
+                std::getline(ss, key, ';');
+                std::string value;
+                while (std::getline(ss, value, ' '))
+                {
+                    if(value == "\r")
+                        continue;
+                        
+                    this->Insert(key, std::stoi(value));
+                }
+                
+            }
+            return 0;
+        }
+
         friend std::ostream &operator<<(std::ostream &os, const Hash &table)
         {
             for (auto n : table.hashTable)
