@@ -233,59 +233,51 @@ namespace MENU
 
         std::ifstream file;
         std::ofstream out(IO::folder + IO::DBName + ".out", std::ios::binary);
+        if(!out.good())
+        {
+            std::cout << "Error opening output file" << std::endl;
+            return 1;
+        }
 
         switch (field[0])
         {
         case 'd':
-        {
             // dev hash keys
             file.open(IO::folder + IO::DBName + IO::devExt, std::ios::binary);
-            return outputKeys(IO::getKeys(file), out);
-        }
+            break;
         case 'g':
-        {
             // genre hash keys
             file.open(IO::folder + IO::DBName + IO::genreExt, std::ios::binary);
-            return outputKeys(IO::getKeys(file),out);
-        }
+            break;
         case 'l':
-        {
             // language hash keys
             file.open(IO::folder + IO::DBName + IO::langExt, std::ios::binary);
-            return outputKeys(IO::getKeys(file), out);
-        }
+            break;
         case 't':
-        {
             // tag hash keys
             file.open(IO::folder + IO::DBName + IO::tagExt, std::ios::binary);
-            return outputKeys(IO::getKeys(file), out);
-        }
+            break;
         case 'p':
-        {
             switch (field[1])
             {
             case 'u':
-            {
                 // publisher hash keys
                 file.open(IO::folder + IO::DBName + IO::pubExt, std::ios::binary);
-                return outputKeys(IO::getKeys(file), out);
-            }
+                break;
             case 'a':
-            {
                 // file.open(IO::folder + IO::DBName + IO::patExt, std::ios::binary);
                 // return outputKeys(IO::getKeys(file));
                 std::cout << "Not implemented yet" << std::endl;
-            }
+                return 1;
             default:
-            {
                 return HelpMessage();
             }
-            }
-        }
+            break;
         default:
-        {
             return HelpMessage();
         }
-        }
+        file.close();
+        out.close();
+        return outputKeys(IO::getKeys(file), out);
     }
 }
