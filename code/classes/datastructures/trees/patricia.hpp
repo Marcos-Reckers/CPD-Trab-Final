@@ -1,8 +1,5 @@
 #pragma once
-#include <iostream>
-#include <string>
-#include <vector>
-#include <fstream>
+#include "../../includes.hpp"
 
 namespace Trees
 {

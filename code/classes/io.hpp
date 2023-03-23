@@ -1,15 +1,8 @@
 #pragma once
 #include "strings.hpp"
-#include "game.hpp"
-#include "Trees/patricia.hpp"
-#include "hash.hpp"
-#include <iostream>
-#include <string>
-#include <vector>
-#include <fstream>
-#include <cstdio>
-#include <tuple>
-#include <filesystem>
+#include "datastructures/game.hpp"
+#include "datastructures/trees/patricia.hpp"
+#include "datastructures/tables/hash.hpp"
 
 namespace IO
 {

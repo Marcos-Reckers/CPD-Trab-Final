@@ -1,0 +1,14 @@
+#pragma once
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <array>
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <chrono>
+#include <tuple>
+#include <filesystem>
+#include <cstdio>
+#include <climits>
+#include <unordered_map>

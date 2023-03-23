@@ -1,10 +1,5 @@
 #pragma once
-#include <iostream>
-#include <vector>
-#include <unordered_map>
-#include <fstream>
-#include <sstream>
-#include "strings.hpp"
+#include "../../strings.hpp"
 
 namespace Tables
 {

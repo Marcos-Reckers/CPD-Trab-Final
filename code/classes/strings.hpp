@@ -1,10 +1,5 @@
 #pragma once
-#include <iostream>
-#include <string>
-#include <vector>
-#include <fstream>
-#include <array>
-#include <algorithm>
+#include "includes.hpp"
 
 namespace STR
 {
