@@ -1,5 +1,5 @@
 #pragma once
-#include "../subclasses.hpp"
+#include "subclasses.hpp"
 
 namespace DB
 {
