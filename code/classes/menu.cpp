@@ -212,16 +212,16 @@ namespace MENU
         return IO::databaseExists();
     }
 
-    int outputKeys(const std::vector<std::string>& keys)
+    int outputKeys(const std::vector<std::string> &keys, std::ofstream& out)
     {
         for (auto key : keys)
         {
-            std::cout << key << ";";
+            out << key << ";";
         }
-        std::cout << std::endl;
+        out << std::endl;
         return 0;
     }
-    
+
     int GetField(const std::vector<std::string> &args)
     {
         if (args.size() < 2)
@@ -232,6 +232,7 @@ namespace MENU
         auto &field = args[1];
 
         std::ifstream file;
+        std::ofstream out(IO::folder + IO::DBName + ".out", std::ios::binary);
 
         switch (field[0])
         {
@@ -239,25 +240,25 @@ namespace MENU
         {
             // dev hash keys
             file.open(IO::folder + IO::DBName + IO::devExt, std::ios::binary);
-            return outputKeys(IO::getKeys(file));
+            return outputKeys(IO::getKeys(file), out);
         }
         case 'g':
         {
             // genre hash keys
             file.open(IO::folder + IO::DBName + IO::genreExt, std::ios::binary);
-            return outputKeys(IO::getKeys(file));
+            return outputKeys(IO::getKeys(file),out);
         }
         case 'l':
         {
             // language hash keys
             file.open(IO::folder + IO::DBName + IO::langExt, std::ios::binary);
-            return outputKeys(IO::getKeys(file));
+            return outputKeys(IO::getKeys(file), out);
         }
         case 't':
         {
             // tag hash keys
             file.open(IO::folder + IO::DBName + IO::tagExt, std::ios::binary);
-            return outputKeys(IO::getKeys(file));
+            return outputKeys(IO::getKeys(file), out);
         }
         case 'p':
         {
@@ -267,7 +268,7 @@ namespace MENU
             {
                 // publisher hash keys
                 file.open(IO::folder + IO::DBName + IO::pubExt, std::ios::binary);
-                return outputKeys(IO::getKeys(file));
+                return outputKeys(IO::getKeys(file), out);
             }
             case 'a':
             {
