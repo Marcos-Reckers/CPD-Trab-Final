@@ -214,11 +214,12 @@ namespace MENU
 
     int outputKeys(const std::vector<std::string> &keys)
     {
+        std::stringstream ss;
         for (auto key : keys)
         {
-            std::cout << key << ";";
+            ss << key << ";";
         }
-        std::cout << std::endl;
+        std::cout << ss.str() << std::endl;
         return 0;
     }
 
@@ -270,10 +271,6 @@ namespace MENU
         default:
             return HelpMessage();
         }
-        
-        if (!file.good())
-            return 1;
-
         auto keys = IO::getKeys(file);
         file.close();
         return outputKeys(keys);
