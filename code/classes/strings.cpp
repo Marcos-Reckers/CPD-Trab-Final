@@ -21,49 +21,18 @@ namespace STR
         return strings;
     }
 
-    std::vector<int> vectorFromListInt(const std::string &str)
+    int removeAnomalies(std::string &str)
     {
-        std::vector<int> vector;                         // Vector to be returned.
-        std::string Str = str.substr(1, str.size() - 2); // Removes '[' and ']'
-        auto Strs = customSplit(Str, ',');               // Split the string by ','
+        if (str[0] == ' ')
+            str = str.substr(1, str.size()); // Remove the first space
 
-        for (auto &String : Strs)
-        {
-            if (String[0] == ' ')
-                String = String.substr(1, String.size()); // Remove the first space
-            vector.push_back(String.length() ? std::stoi(String) : -1);
-        }
-        return vector;
-    }
+        if (str[0] == '\'' || str[0] == '\"')
+            str = str.substr(1, str.size()); // Remove the first and last character
 
-    std::vector<std::string> vectorFromListStr(const std::string &str)
-    {
-        std::vector<std::string> vector;                 // Vector to be returned.
-        std::string Str = str.substr(1, str.size() - 2); // Removes '[' and ']'
-        auto Strs = customSplit(Str, ',');               // Split the string by ','
+        if (str[str.size() - 1] == '\'' || str[str.size() - 1] == '\"')
+            str = str.substr(0, str.size() - 1); // Remove the first and last character
 
-        for (auto &String : Strs)
-        {
-            if (String[0] == ' ')
-                String = String.substr(1, String.size()); // Remove the first space
-            vector.push_back(String);
-        }
-        return vector;
-    }
-
-    std::vector<bool> vectorFromListBool(const std::string &str)
-    {
-        std::vector<bool> vector;                        // Vector to be returned.
-        std::string Str = str.substr(1, str.size() - 2); // Removes '[' and ']'
-        auto Strs = customSplit(Str, ',');               // Split the string by ','
-
-        for (auto &String : Strs)
-        {
-            if (String[0] == ' ')
-                String = String.substr(1, String.size()); // Remove the first space
-            vector.push_back(String == "True");
-        }
-        return vector;
+        return 0;
     }
 
     template <>
@@ -75,8 +44,7 @@ namespace STR
 
         for (auto &String : Strs)
         {
-            if (String[0] == ' ')
-                String = String.substr(1, String.size()); // Remove the first space
+            removeAnomalies(String);
             vector.push_back(String.length() ? std::stoi(String) : -1);
         }
         return vector;
@@ -91,10 +59,11 @@ namespace STR
 
         for (auto &String : Strs)
         {
-            if (String[0] == ' ')
-                String = String.substr(1, String.size()); // Remove the first space
+            removeAnomalies(String);
             vector.push_back(String);
         }
+        if(vector[0] == "")
+            vector.clear();
         return vector;
     }
 
@@ -107,8 +76,7 @@ namespace STR
 
         for (auto &String : Strs)
         {
-            if (String[0] == ' ')
-                String = String.substr(1, String.size()); // Remove the first space
+            removeAnomalies(String);
             vector.push_back(String == "True");
         }
         return vector;

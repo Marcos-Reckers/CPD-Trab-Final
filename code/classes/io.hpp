@@ -36,4 +36,6 @@ namespace IO
     bool databaseExists();
     std::vector<int> findInHash(const std::string& path, const std::string& key);
     std::vector<std::string> getKeys(std::ifstream& file);
+
+    std::vector<int> searchFile(std::ifstream& file, const std::string& key);
 }

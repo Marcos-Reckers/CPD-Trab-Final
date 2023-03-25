@@ -280,4 +280,32 @@ namespace IO
         }
         return keys;
     }
+
+    std::vector<int> searchFile(std::ifstream &file, const std::string &key)
+    {
+        std::vector<int> appids;
+
+        std::string line;
+        while(!file.eof())
+        {
+            std::getline(file, line);
+            auto semi = line.find_first_of(';');
+            
+            if(line.substr(0, semi) == key)
+            {
+                auto ids = STR::customSplit(line.substr(semi+1), ' ');
+
+                for(auto id : ids)
+                {
+                    if(id == "\r" || id == "")
+                        continue;
+                    appids.push_back(std::stoi(id));
+                }
+
+                return appids;
+            }
+        }
+        
+        return std::vector<int>();
+    }
 }

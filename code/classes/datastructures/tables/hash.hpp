@@ -22,12 +22,9 @@ namespace Tables
         size_t Size() { return this->hashTable.size(); }
         void Insert(const T &key, int data)
         {
-            if (this->hashTable.find(key) == this->hashTable.end())
-            {
-                this->hashTable[key] = std::vector<int>();
-            }
             this->hashTable[key].push_back(data);
         }
+        
         std::vector<int> Search(const T &key)
         {
             auto it = this->hashTable.find(key);
