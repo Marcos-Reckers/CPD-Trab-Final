@@ -44,7 +44,7 @@ namespace DB
 
     public:
         GamePrice(const std::string &price);
-        int getPrice() { return price; };
+        int getPrice() const { return price; };
         friend std::ostream &operator<<(std::ostream &os, const GamePrice &price)
         {
             if (price.price == -1)
@@ -76,6 +76,7 @@ namespace DB
         int getDay() { return day; };
         Months getMonth() { return month; };
         int getYear() { return year; };
+        std::string getYearStr() const { return year > 0 ? std::to_string(year) : year == -1 ? "NaN" : "TBA" ; };
         int getDecade() { return decade; };
         static Months StrToMonth(const std::string &month);
         static std::string MonthToStr(Months month);

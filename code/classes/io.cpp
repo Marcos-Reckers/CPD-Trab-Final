@@ -127,13 +127,16 @@ namespace IO
     int ConvertDatabase(const std::string &path, size_t limit)
     {
         //! Imports the Data
-        std::vector<DB::Game> games; // Vector of games
-        Trees::Patricia patricia;    // Patricia tree
-        Tables::Hash<std::string> languages;      // Hash table of languages.
-        Tables::Hash<std::string> genres;         // Hash table of genres.
-        Tables::Hash<std::string> developers;     // Hash table of developers.
-        Tables::Hash<std::string> publishers;     // Hash table of publishers.
-        Tables::Hash<std::string> popularTags;    // Hash table of popular tags.
+        std::vector<DB::Game> games;            // Vector of games
+        Trees::Patricia patricia;               // Patricia tree
+        Tables::Hash<std::string> languages;    // Hash table of languages.
+        Tables::Hash<std::string> genres;       // Hash table of genres.
+        Tables::Hash<std::string> developers;   // Hash table of developers.
+        Tables::Hash<std::string> publishers;   // Hash table of publishers.
+        Tables::Hash<std::string> popularTags;  // Hash table of popular tags.
+        Tables::Hash<std::string> releaseDates; // Hash table of release dates.
+        Tables::Hash<std::string> prices;       // Hash table of prices.
+        Tables::Hash<std::string> reviews;      // Hash table of reviews.
 
         //* Open the input file
         std::ifstream input(path); // File to be read.
@@ -149,7 +152,7 @@ namespace IO
         {
             std::getline(input, line);                  // Read the next line.
             auto strings = STR::customSplit(line, ';'); // Split the line into a vector of strings.
-            
+
             // Add the tags to the game.
             const std::string tags = strings[popularTagsIndex] + ", " + strings[gameDetailsIndex] + ", " + strings[languagesIndex] + ", " + strings[genreIndex];
 
@@ -164,6 +167,9 @@ namespace IO
             genres.Insert(STR::customSplit(strings[genreIndex], ','), game.getAppid());
             developers.Insert(STR::customSplit(strings[developerIndex], ','), game.getAppid());
             publishers.Insert(STR::customSplit(strings[publisherIndex], ','), game.getAppid());
+            releaseDates.Insert(game.getReleaseDate().getYearStr(), game.getAppid());
+            prices.Insert(game.getPrice().toStr(), game.getAppid());
+            reviews.Insert(DB::ReviewsToStr(game.getReviews()), game.getAppid());
 
             // Add the game to the vector.
             games.push_back(game); // Add the game to the vector.
@@ -190,41 +196,59 @@ namespace IO
 
         // outputs the patricia tree to the file
         std::ofstream patriciaFile(DBPath + patExt, std::ios::binary);
-        if(!patriciaFile.good())
+        if (!patriciaFile.good())
             return -1;
         patricia.writeToFile(patriciaFile);
         patriciaFile.close();
 
         //* outputs the tables to the file
         std::ofstream langFile(DBPath + langExt, std::ios::binary);
-        if(!langFile.good())
+        if (!langFile.good())
             return -1;
         languages.writeToFile(langFile);
         langFile.close();
 
         std::ofstream genreFile(DBPath + genreExt, std::ios::binary);
-        if(!genreFile.good())
+        if (!genreFile.good())
             return -1;
         genres.writeToFile(genreFile);
         genreFile.close();
 
         std::ofstream devFile(DBPath + devExt, std::ios::binary);
-        if(!devFile.good())
+        if (!devFile.good())
             return -1;
         developers.writeToFile(devFile);
         devFile.close();
 
         std::ofstream pubFile(DBPath + pubExt, std::ios::binary);
-        if(!pubFile.good())
+        if (!pubFile.good())
             return -1;
         publishers.writeToFile(pubFile);
         pubFile.close();
 
         std::ofstream tagFile(DBPath + tagExt, std::ios::binary);
-        if(!tagFile.good())
+        if (!tagFile.good())
             return -1;
         popularTags.writeToFile(tagFile);
         tagFile.close();
+
+        std::ofstream dateFile(DBPath + dateExt, std::ios::binary);
+        if (!dateFile.good())
+            return -1;
+        releaseDates.writeToFile(dateFile);
+        dateFile.close();
+
+        std::ofstream priceFile(DBPath + priceExt, std::ios::binary);
+        if (!priceFile.good())
+            return -1;
+        prices.writeToFile(priceFile);
+        priceFile.close();
+
+        std::ofstream reviewFile(DBPath + reviewExt, std::ios::binary);
+        if (!reviewFile.good())
+            return -1;
+        reviews.writeToFile(reviewFile);
+        reviewFile.close();
 
         return 0;
     }
@@ -250,14 +274,13 @@ namespace IO
         if (!file.good())
             return appids;
 
-
-        while(!file.eof())
+        while (!file.eof())
         {
             std::getline(file, line);
-            if(line.starts_with(key))
+            if (line.starts_with(key))
             {
                 auto ids = STR::customSplit(line, ',');
-                for(auto id : ids)
+                for (auto id : ids)
                 {
                     appids.push_back(std::stoi(id));
                 }
@@ -272,7 +295,7 @@ namespace IO
     {
         std::vector<std::string> keys;
         std::string line;
-        while(!file.eof())
+        while (!file.eof())
         {
             std::getline(file, line);
             auto end = line.find_first_of(';');
@@ -286,18 +309,18 @@ namespace IO
         std::vector<int> appids;
 
         std::string line;
-        while(!file.eof())
+        while (!file.eof())
         {
             std::getline(file, line);
             auto semi = line.find_first_of(';');
-            
-            if(line.substr(0, semi) == key)
-            {
-                auto ids = STR::customSplit(line.substr(semi+1), ' ');
 
-                for(auto id : ids)
+            if (line.substr(0, semi) == key)
+            {
+                auto ids = STR::customSplit(line.substr(semi + 1), ' ');
+
+                for (auto id : ids)
                 {
-                    if(id == "\r" || id == "")
+                    if (id == "\r" || id == "")
                         continue;
                     appids.push_back(std::stoi(id));
                 }
@@ -305,7 +328,7 @@ namespace IO
                 return appids;
             }
         }
-        
+
         return std::vector<int>();
     }
 }

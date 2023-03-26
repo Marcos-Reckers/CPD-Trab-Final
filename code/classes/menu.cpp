@@ -209,13 +209,13 @@ namespace MENU
         auto genres = STR::vectorFromList<std::string>(strings[0].substr(4));
         auto languages = STR::vectorFromList<std::string>(strings[1].substr(4));
         auto tags = STR::vectorFromList<std::string>(strings[2].substr(4));
-        auto dates = STR::vectorFromList<int>(strings[3].substr(4));
+        auto dates = STR::vectorFromList<std::string>(strings[3].substr(4));
         auto developers = STR::vectorFromList<std::string>(strings[4].substr(4));
         auto publishers = STR::vectorFromList<std::string>(strings[5].substr(4));
         auto minPrice = std::stof(strings[6].substr(4));
         auto maxPrice = std::stof(strings[7].substr(4));
         auto decade = strings[8].substr(4).length() ? std::stoi(strings[8].substr(4)) : -1;
-        auto reviews = STR::vectorFromList<bool>(strings[9].substr(4));
+        auto reviews = STR::vectorFromList<std::string>(strings[9].substr(4));
         auto gameID = strings[10].substr(4).length() ? std::stoi(strings[10].substr(4)) : -1;
         auto name = strings[11].substr(4);
 
@@ -246,8 +246,8 @@ namespace MENU
         if (tags.size() != 0)
             appids[2] = {searchFile(IO::folder + IO::DBName + IO::tagExt, tags), true}; // tags Ids
 
-        // if(dates.size() != 0)
-        //     appids[3] = {searchFile(IO::folder + IO::DBName + IO::dateExt, dates), true}; // dates Ids
+        if(dates.size() != 0)
+            appids[3] = {searchFile(IO::folder + IO::DBName + IO::dateExt, dates), true}; // dates Ids
 
         if (developers.size() != 0)
             appids[4] = {searchFile(IO::folder + IO::DBName + IO::devExt, developers), true}; // developers Ids
@@ -256,13 +256,13 @@ namespace MENU
             appids[5] = {searchFile(IO::folder + IO::DBName + IO::pubExt, publishers), true}; // publishers Ids
         
         // if(minPrice != 0.0f || maxPrice != 500.0f)
-        //     appids[6] = {searchFile(IO::folder + IO::DBName + IO::minPriceExt, minPrice, maxPrice), true}; // price Ids
+        //     appids[6] = {searchFilePrice(IO::folder + IO::DBName + IO::priceExt, minPrice, maxPrice), true}; // price Ids
 
         // if(decade != -1)
         //     appids[7] = {searchFile(IO::folder + IO::DBName + IO::decadeExt, decade), true}; // decade Ids
 
-        // if(reviews.size() != 0)
-        //     appids[8] = {searchFile(IO::folder + IO::DBName + IO::reviewsExt, reviews), true}; // reviews Ids
+        if(reviews.size() != 0)
+            appids[8] = {searchFile(IO::folder + IO::DBName + IO::reviewExt, reviews), true}; // reviews Ids
 
         // if(gameID != -1)
         //     appids[9] = {searchFile(IO::folder + IO::DBName + IO::gameIDExt, gameID), true}; // gameID Ids
@@ -335,8 +335,17 @@ namespace MENU
         switch (field[0])
         {
         case 'd':
-            // dev hash keys
-            file.open(IO::folder + IO::DBName + IO::devExt, std::ios::binary);
+            switch(field[1])
+            {
+            case 'a':
+                // date hash keys
+                file.open(IO::folder + IO::DBName + IO::dateExt, std::ios::binary);
+                break;
+            case 'e':
+                // developer hash keys
+                file.open(IO::folder + IO::DBName + IO::devExt, std::ios::binary);
+                break;
+            }
             break;
         case 'g':
             // genre hash keys
@@ -346,25 +355,34 @@ namespace MENU
             // language hash keys
             file.open(IO::folder + IO::DBName + IO::langExt, std::ios::binary);
             break;
-        case 't':
-            // tag hash keys
-            file.open(IO::folder + IO::DBName + IO::tagExt, std::ios::binary);
-            break;
         case 'p':
             switch (field[1])
             {
-            case 'u':
-                // publisher hash keys
-                file.open(IO::folder + IO::DBName + IO::pubExt, std::ios::binary);
-                break;
             case 'a':
                 // file.open(IO::folder + IO::DBName + IO::patExt, std::ios::binary);
                 // return outputKeys(IO::getKeys(file));
                 std::cout << "Not implemented yet" << std::endl;
                 return 1;
+            case 'r':
+                // price hash keys
+                file.open(IO::folder + IO::DBName + IO::priceExt, std::ios::binary);
+                break;
+            case 'u':
+                // publisher hash keys
+                file.open(IO::folder + IO::DBName + IO::pubExt, std::ios::binary);
+                break;
             default:
                 return HelpMessage();
+                break;
             }
+            break;
+        case 'r':
+            // review hash keys
+            file.open(IO::folder + IO::DBName + IO::reviewExt, std::ios::binary);
+            break;
+        case 't':
+            // tag hash keys
+            file.open(IO::folder + IO::DBName + IO::tagExt, std::ios::binary);
             break;
         default:
             return HelpMessage();

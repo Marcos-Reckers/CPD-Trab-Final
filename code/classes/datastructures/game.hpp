@@ -20,13 +20,14 @@ namespace DB
         Game();
         ~Game() = default;
         const int getAppid() const { return appid; };
-        std::string getName() { return name; };
-        std::string getDeveloper() { return developer; };
-        std::string getPublisher() { return publisher; };
-        ReleaseDate getReleaseDate() { return release_date; };
-        std::string getTags() { return tags; };
-        int getPrice() { return price.getPrice(); };
-        Reviews getReviews() { return reviews; };
+        std::string getName() const { return name; };
+        std::string getDeveloper() const { return developer; };
+        std::string getPublisher() const { return publisher; };
+        ReleaseDate getReleaseDate() const { return release_date; };
+        std::string getTags() const { return tags; };
+        GamePrice getPrice() const { return price; };
+        int getPriceInt() const { return price.getPrice(); };
+        Reviews getReviews() const { return reviews; };
         int writeToFile(std::ofstream &file);
         bool readFromFile(std::ifstream &file, int Index);
         friend std::ostream &operator<<(std::ostream &os, const Game &game)

@@ -14,6 +14,9 @@ namespace IO
     const std::string devExt = ".dev";      // Path to the developers table.
     const std::string pubExt = ".pub";      // Path to the publishers table.
     const std::string tagExt = ".tag";      // Path to the tags table.
+    const std::string dateExt = ".date";    // Path to the release dates table.
+    const std::string priceExt = ".price";  // Path to the prices table.
+    const std::string reviewExt = ".review"; // Path to the reviews table.
 
     const int urlIndex = 0;         // Index of the url in the csv file.
     const int nameIndex = 1;        // Index of the name in the csv file.
@@ -26,16 +29,16 @@ namespace IO
     const int languagesIndex = 8;   // Index of the languages in the csv file.
     const int genreIndex = 9;       // Index of the genre in the csv file.
     const int priceIndex = 10;      // Index of the price in the csv file.
-    
+
     std::vector<DB::Game> importGames(const std::string &path, size_t limit = -1);
     int exportGames(const std::string &path, const std::vector<DB::Game> &games);
-    DB::Game getGame(const std::string& path, size_t index);
-    int appendGame(const std::string& path, DB::Game& game);
-    std::vector<DB::Game> loadGames(const std::string& path);
-    int ConvertDatabase(const std::string& path, size_t limit = -1);
+    DB::Game getGame(const std::string &path, size_t index);
+    int appendGame(const std::string &path, DB::Game &game);
+    std::vector<DB::Game> loadGames(const std::string &path);
+    int ConvertDatabase(const std::string &path, size_t limit = -1);
     bool databaseExists();
-    std::vector<int> findInHash(const std::string& path, const std::string& key);
-    std::vector<std::string> getKeys(std::ifstream& file);
+    std::vector<int> findInHash(const std::string &path, const std::string &key);
+    std::vector<std::string> getKeys(std::ifstream &file);
 
-    std::vector<int> searchFile(std::ifstream& file, const std::string& key);
+    std::vector<int> searchFile(std::ifstream &file, const std::string &key);
 }
