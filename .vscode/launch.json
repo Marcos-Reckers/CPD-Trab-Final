@@ -9,7 +9,17 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${fileDirname}/${fileBasenameNoExtension}",
-            "args": [],
+            // "args": ["-s", "gen=['Accounting', 'Action'];lan=['Arabic', 'Bulgarian'];tag=['1980s', '1990s'];dat=[1960, 1961];dev=['(Miwashiba)', ' Alexander Cobleigh'];pub=['!Lim studio', '#workshop'];min=26.67;max=480.0;dec=1970;rev=[True, True, True, True, True, True, True, True, True];gid=123123;nam=baha"],
+            "args": ["-c", "../DB_Steam.csv", "-1"],
+            // "args": [
+            //     "-s",
+            //     "gen=[];lan=[];tag=[];dat=[];dev=['Keen Software House'];pub=[];min=0.0;max=500.0;dec=;rev=[False, False, False, False, False, False, False, False, False];gid=;nam="
+            // ],
+            // "args": [
+            //     "-s", 
+            //     "gen=[];lan=[];tag=[];dat=[];dev=['Keen Software House'];pub=['Keen Software House'];min=0.0;max=500.0;dec=;rev=[False, False, False, False, False, False, False, False, False];gid=;nam="
+            // ],
+            // "args": ["-f", "dev"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],
