@@ -89,25 +89,53 @@ class windows:
             range(int(self.datas[0])-1, int(self.datas[len(self.datas)-3])+10, 10))
         maxprice = subprocess.run([self.DB_PATH, '-f', 'pri'],
                                   capture_output=True).stdout.decode('utf-8').split(';')
-        self.max_price = float(
-            sorted(maxprice)[len(maxprice)-3].removeprefix('$'))
+        self.max_price = float(0)
+        for i in maxprice:
+            if i != '' and i != '\r\n':
+                if float(i)/100 > self.max_price:
+                    self.max_price = float(i)/100
+        
+    def translate_reviews(self, values: list[bool]):
+        """Traduz os valores de reviews para o formato da base de dados"""
+        reviews = []
+        if values[0]:
+            reviews.append('Overwhelmingly Positive')
+        if values[1]:
+            reviews.append('Very Positive')
+        if values[2]:
+            reviews.append('Positive')
+        if values[3]:
+            reviews.append('Mostly Positive')
+        if values[4]:
+            reviews.append('Mixed')
+        if values[5]:
+            reviews.append('Mostly Negative')
+        if values[6]:
+            reviews.append('Negative')
+        if values[7]:
+            reviews.append('Very Negative')
+        if values[8]:
+            reviews.append('Overwhelmingly Negative')
+        return reviews
+
 
     def searchDatabase(self, values):
         selected_date = values['-DATA-']
         selected_id = values['-ID-']
         selected_name = values['-NAME-']
-        selected_price_min = values['-PRICE_MIN-']
-        selected_price_max = values['-PRICE_MAX-']
+        selected_price_min = -1#int(values['-PRICE_MIN-'] * 100) #TODO: Implementar Free como -1
+        selected_price_max = -1#int(values['-PRICE_MAX-'] * 100) #TODO: Implementar Ilimitado como -1
         selected_genero = values['-GENERO-']
         selected_idioma = values['-IDIOMA-']
         selected_tags = values['-TAGS-']
         selected_dev = values['-DEV-']
         selected_publisher = values['-PUBLISHER-']
-        selected_review = [values['-REV_EX_POS-'], values['-REV_MUITO_POS-'], values['-REV_POS-'], values['-REV_LIG_POS-'],
-                           values['-REV_NEUTRAS-'], values['-REV_LIG_NEG-'], values['-REV_NEG-'], values['-REV_MUITO_NEG-'], values['-REV_EX_NEG-']]
+        selected_review = self.translate_reviews([values['-REV_EX_POS-'], values['-REV_MUITO_POS-'], values['-REV_POS-'], values['-REV_LIG_POS-'],
+                           values['-REV_NEUTRAS-'], values['-REV_LIG_NEG-'], values['-REV_NEG-'], values['-REV_MUITO_NEG-'], values['-REV_EX_NEG-']])
         selected_decade = values['-DECADE-']
+        selected_searchType = 0 # values['-SEARCH_TYPE-'] # 0 = AND, 1 = OR #TODO: Implementar OR e botão
 
-        output = f'gen={selected_genero};lan={selected_idioma};tag={selected_tags};dat={selected_date};dev={selected_dev};pub={selected_publisher};min={selected_price_min};max={selected_price_max};dec={selected_decade};rev={selected_review};gid={selected_id};nam={selected_name}'
+        output = f'gen={selected_genero};lan={selected_idioma};tag={selected_tags};dat={selected_date};dev={selected_dev};pub={selected_publisher};min={selected_price_min};max={selected_price_max};dec={selected_decade};rev={selected_review};gid={selected_id};nam={selected_name};typ={selected_searchType}'
         print(output)
         print("running database.exe")
         saida_c = subprocess.run(
