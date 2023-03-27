@@ -192,7 +192,7 @@ namespace MENU
         if(maxPrice == -1)
             maxPrice = INT_MAX;
 
-        auto id = IO::searchFilePrice(file, minPrice, maxPrice);
+        ids = IO::searchFilePrice(file, minPrice, maxPrice);
 
         file.close();
 
@@ -208,7 +208,7 @@ namespace MENU
         if (!file.good())
             return ids;
 
-        auto id = IO::searchFileDec(file, Decade);
+        ids = IO::searchFileDec(file, Decade);
 
         file.close();
 
@@ -295,7 +295,7 @@ namespace MENU
                 std::cout << "No games with that ID found." << std::endl;
                 return 0;
             }
-            std::cout << games[0] << std::endl;
+            std::cout << games[0].DataOut() << std::endl;
             return 0;
         }
 
@@ -360,12 +360,14 @@ namespace MENU
         //     appids[10] = {searchFile(IO::folder + IO::DBName + IO::nameExt, name), true}; // name Ids
 
         std::vector<int> Ids;
+        bool noSearch = true;
         bool first = true;
         for(auto &i : appids)
         {
             if (i.second && first)
             {
                 first = false;
+                noSearch = false;
                 Ids = i.first;
             }
 
@@ -374,15 +376,28 @@ namespace MENU
                 Ids = intersection(Ids, i.first, type);
             }
         }
+        std::vector<DB::Game> games;
 
-        auto games = searchGames(Ids);
-        if (games.size() == 0)
+        if(noSearch)
         {
-            std::cout << "No games found." << std::endl;
-            return 0;
+            games = IO::loadGames(IO::folder + IO::DBName);
         }
+        else
+        {
+            games = searchGames(Ids);
+            if (games.size() == 0)
+            {
+                std::cout << "No games found." << std::endl;
+                return 0;
+            }
+        }
+
+        std::stringstream ss;
         for(auto &i : games)
-            std::cout << i << std::endl;
+            ss << i.DataOut() << std::endl;
+
+        std::cout << ss.str() << std::endl;
+
         return 0;
     }
 

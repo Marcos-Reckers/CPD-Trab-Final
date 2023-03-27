@@ -3,35 +3,138 @@ import subprocess
 import os
 
 
-class windows:
+class database:
     def __init__(self, DB_PATH: str):
         self.DB_PATH = DB_PATH
-        if not os.path.isfile(self.DB_PATH):
-            self.DB_fail_popup()
-            return
 
+    def Validate(self) -> bool:
         validate = subprocess.run([self.DB_PATH, '-v'], capture_output=True)
         if '0' in validate.stdout.decode('utf-8'):
-            if not self.create_DB():
-                return
+            return False
+        else:
+            return True
 
-        self.block_column_size = 18  # Tamanho das colunas
-        self.block_line_size = 10  # Tamanho das linhas
+    def CheckExeExistence(self) -> bool:
+        return not os.path.isfile(self.DB_PATH)
 
-        self.load_fields()
-        self.create_menu()
+    def create(self, path: str) -> bool:
+        saida_c = subprocess.run(
+            [self.DB_PATH, '-c', path, '-1'], capture_output=True)
+        print(saida_c.stdout.decode('utf-8'))
+        if saida_c.returncode == 0:
+            return True
+        else:
+            return False
 
-        self.window_menu = sg.Window(
+    def fields(self, field: str) -> list:
+        match field:
+            case 'genre':
+                database_field = 'gen'
+            case 'language':
+                database_field = 'lan'
+            case 'tag':
+                database_field = 'tag'
+            case 'developer':
+                database_field = 'dev'
+            case 'publisher':
+                database_field = 'pub'
+            case 'date':
+                database_field = 'dat'
+            case 'price':
+                database_field = 'pri'
+            case 'decade':
+                database_field = 'dat'
+
+        ret = subprocess.run([self.DB_PATH, '-f', database_field],
+                             capture_output=True).stdout.decode('utf-8')
+
+        fields = ret.split(';')
+        sortedFields = sorted(fields)
+
+        while '' in sortedFields:
+            sortedFields.remove('')
+        while '\r\n' in sortedFields:
+            sortedFields.remove('\r\n')
+
+        if field == 'decade':
+            decade: int = int(sortedFields[0])
+            offsetDec = decade % 10
+            initialDec = decade - offsetDec
+            # -3 para ignorar TBA e NaN
+            finalDec = int(sortedFields[len(sortedFields)-3]) + 10
+            return list(range(initialDec, finalDec, 10))
+        elif field == 'price':
+            price: int = 0
+            for i in sortedFields:
+                if i == '' or i == '\r\n':
+                    continue
+                num = int(i)
+                if num > price:
+                    price = num
+            max_price = float(price) / 100
+            return [max_price]
+
+        return sortedFields
+
+
+class Program:
+    def __init__(self, DB_PATH: str) -> None:
+        self.database = database(DB_PATH)
+        self.windowManager = windows()
+
+    def run(self):
+        securityChecks = True
+        while securityChecks:
+            if self.database.CheckExeExistence():
+                return self.windowManager.fail_popup(text='O programa de base de dados não existe')
+
+            if not self.database.Validate():
+                csv_path = self.windowManager.create_DB()
+                self.database.create(csv_path)
+                continue
+
+            securityChecks = False
+
+        fields: dict = {}
+        fields["languages"] = self.database.fields('language')
+        fields["genres"] = self.database.fields('genre')
+        fields["tags"] = self.database.fields('tag')
+        fields["developers"] = self.database.fields('developer')
+        fields["publishers"] = self.database.fields('publisher')
+        fields["dates"] = self.database.fields('date')
+        fields["price"] = self.database.fields('price')[0]
+        fields["decades"] = self.database.fields('decade')
+
+        self.windowManager.search(fields)
+
+
+class windows:
+    def __init__(self, Colum_size: int = 18, Line_size: int = 10) -> None:
+        self.block_column_size = Colum_size  # Tamanho das colunas
+        self.block_line_size = Line_size  # Tamanho das linhas
+
+    def search(self, fields: dict):
+        self.max_price = fields["price"]
+        search_screen = self.create_search(fields)
+
+        window = sg.Window(
             'Steam BUG',
-            self.menu,
+            search_screen,
             element_justification='center'
         )
 
-        self.main_window()
+        while True:
+            event, values = window.read()
+            if event == sg.WIN_CLOSED:
+                break
+            elif event == 'BUSCAR':
+                self.searchDatabase(values)
+            elif event == 'Limpar Filtros':
+                self.cleanFields(window, fields)
 
-    def DB_fail_popup(self):
-        """Cria a janela dizendo que o programa de base de dados não existe"""
-        sg.popup('O programa de base de dados não existe')
+    def fail_popup(self, title: str, text: str):
+        """Cria a janela de erro"""
+        sg.popup(title=title, text=text)
 
     def create_DB(self) -> bool:
         """Cria a janela para procurar e criar a base de dados"""
@@ -49,52 +152,7 @@ class windows:
             sg.user_settings_set_entry(
                 '-filenames-', list(set(sg.user_settings_get_entry('-filenames-', []) + [values['-FILENAME-'], ])))
             sg.user_settings_set_entry('-last filename-', values['-FILENAME-'])
-            saida_c = subprocess.run(
-                [self.DB_PATH, '-c', values['-FILENAME-'], '-1'], capture_output=True)
-            print(saida_c.stdout.decode('utf-8'))
-            if saida_c.returncode == 0:
-                return True
-            else:
-                return False
 
-    def load_fields(self):
-        """Cria os parametros para abrir a janela"""
-
-        gen = subprocess.run([self.DB_PATH, '-f', 'gen'],
-                             capture_output=True).stdout.decode('utf-8').split(';')
-        self.generos = sorted(gen)[3:]
-
-        lan = subprocess.run([self.DB_PATH, '-f', 'lan'],
-                             capture_output=True).stdout.decode('utf-8').split(';')
-        self.idiomas = sorted(lan)[3:]
-
-        tag = subprocess.run([self.DB_PATH, '-f', 'tag'],
-                             capture_output=True).stdout.decode('utf-8').split(';')
-        self.tags = sorted(tag)[3:]
-
-        dev = subprocess.run([self.DB_PATH, '-f', 'dev'],
-                             capture_output=True).stdout.decode('utf-8').split(';')
-        self.devs = sorted(dev)[3:]
-
-        pub = subprocess.run([self.DB_PATH, '-f', 'pub'],
-                             capture_output=True).stdout.decode('utf-8').split(';')
-        self.publishers = sorted(pub)[4:]
-
-        dat = subprocess.run([self.DB_PATH, '-f', 'dat'],
-                             capture_output=True).stdout.decode('utf-8').split(';')
-        self.datas = sorted(dat)[2:]
-
-        # Lista de decadas
-        self.decadas = list(
-            range(int(self.datas[0])-1, int(self.datas[len(self.datas)-3])+10, 10))
-        maxprice = subprocess.run([self.DB_PATH, '-f', 'pri'],
-                                  capture_output=True).stdout.decode('utf-8').split(';')
-        self.max_price = float(0)
-        for i in maxprice:
-            if i != '' and i != '\r\n':
-                if float(i)/100 > self.max_price:
-                    self.max_price = float(i)/100
-        
     def translate_reviews(self, values: list[bool]):
         """Traduz os valores de reviews para o formato da base de dados"""
         reviews = []
@@ -118,69 +176,108 @@ class windows:
             reviews.append('Overwhelmingly Negative')
         return reviews
 
-
     def searchDatabase(self, values):
-        selected_date = values['-DATA-']
-        selected_id = values['-ID-']
-        selected_name = values['-NAME-']
-        selected_price_min = -1#int(values['-PRICE_MIN-'] * 100) #TODO: Implementar Free como -1
-        selected_price_max = -1#int(values['-PRICE_MAX-'] * 100) #TODO: Implementar Ilimitado como -1
-        selected_genero = values['-GENERO-']
-        selected_idioma = values['-IDIOMA-']
-        selected_tags = values['-TAGS-']
-        selected_dev = values['-DEV-']
-        selected_publisher = values['-PUBLISHER-']
-        selected_review = self.translate_reviews([values['-REV_EX_POS-'], values['-REV_MUITO_POS-'], values['-REV_POS-'], values['-REV_LIG_POS-'],
-                           values['-REV_NEUTRAS-'], values['-REV_LIG_NEG-'], values['-REV_NEG-'], values['-REV_MUITO_NEG-'], values['-REV_EX_NEG-']])
-        selected_decade = values['-DECADE-']
-        selected_searchType = 0 # values['-SEARCH_TYPE-'] # 0 = AND, 1 = OR #TODO: Implementar OR e botão
+        """Procura na base de dados"""
+        output: dict = {}
+        output['name'] = values['-NAME-']
+        output['id'] = values['-ID-']
+        output['date'] = values['-DATA-']
+        output['price_min'] = -1 if float(values['-PRICE_MIN-']
+                                          ) == 0 else int(float(values['-PRICE_MIN-']) * 100)
+        output['price_max'] = -1 if float(values['-PRICE_MAX-']) == self.max_price else int(
+            float(values['-PRICE_MAX-']) * 100)
+        output['genres'] = values['-GENERO-']
+        output['languages'] = values['-IDIOMA-']
+        output['tags'] = values['-TAGS-']
+        output['developers'] = values['-DEV-']
+        output['publishers'] = values['-PUBLISHER-']
+        output['reviews'] = self.translate_reviews([values['-REV_EX_POS-'], values['-REV_MUITO_POS-'], 
+                                                    values['-REV_POS-'], values['-REV_LIG_POS-'],
+                                                    values['-REV_NEUTRAS-'], values['-REV_LIG_NEG-'], 
+                                                    values['-REV_NEG-'], values['-REV_MUITO_NEG-'], 
+                                                    values['-REV_EX_NEG-']])
+        output['decades'] = values['-DECADE-']
+        output['search']: int = 0 if values['-SEARCH_TYPE-'] else 1
 
-        output = f'gen={selected_genero};lan={selected_idioma};tag={selected_tags};dat={selected_date};dev={selected_dev};pub={selected_publisher};min={selected_price_min};max={selected_price_max};dec={selected_decade};rev={selected_review};gid={selected_id};nam={selected_name};typ={selected_searchType}'
-        print(output)
-        print("running database.exe")
+        output = f"gen={output['genres']};lan={output['languages']};tag={output['tags']};dat={output['date']};dev={output['developers']};pub={output['publishers']};min={output['price_min']};max={output['price_max']};dec={output['decades']};rev={output['reviews']};gid={output['id']};nam={output['name']};typ={output['search']}"
+    
         saida_c = subprocess.run(
             ['./code/database.exe', '-s', output], capture_output=True)
-        print(saida_c.stdout.decode('utf-8'))
+        gamesFound = saida_c.stdout.decode('utf-8').split('\n')
 
-    def cleanFields(self):
-        self.window_menu['-ID-'].update('')
-        self.window_menu['-NAME-'].update('')
-        self.window_menu['-PRICE_MIN-'].update(0)
-        self.window_menu['-PRICE_MAX-'].update(self.max_price)
-        self.window_menu['-GENERO-'].update(values=self.generos)
-        self.window_menu['-IDIOMA-'].update(values=self.idiomas)
-        self.window_menu['-TAGS-'].update(values=self.tags)
-        self.window_menu['-DATA-'].update(values=self.datas)
-        self.window_menu['-DEV-'].update(values=self.devs)
-        self.window_menu['-PUBLISHER-'].update(values=self.publishers)
-        self.window_menu['-REV_EX_POS-'].update(False)
-        self.window_menu['-REV_MUITO_POS-'].update(False)
-        self.window_menu['-REV_POS-'].update(False)
-        self.window_menu['-REV_LIG_POS-'].update(False)
-        self.window_menu['-REV_NEUTRAS-'].update(False)
-        self.window_menu['-REV_LIG_NEG-'].update(False)
-        self.window_menu['-REV_NEG-'].update(False)
-        self.window_menu['-REV_MUITO_NEG-'].update(False)
-        self.window_menu['-REV_EX_NEG-'].update(False)
-        self.window_menu['-DECADE-'].update(values=self.decadas)
+        games: list[list[str]] = []
 
-    def main_window(self):
+        for game in gamesFound:
+            i = game.split(';')
+            if not i == ['']:
+                games.append(i)
+
+        fields = ["AppID", "Nome", "Desenvolvedor", "Publicador", "Data de Lançamento", "Tags", "Preço", "Reviews"]
+
+        self.showGames(games, fields)
+
+    def showGames(self, gamesFound: list[list[str]], fields: list[str]):
+        """Mostra os jogos encontrados na janela de resultados"""
+        # ------ Table Definition ------
+
+        layout = [[sg.Table(values=gamesFound[:], headings=fields, max_col_width=20,
+                            auto_size_columns=True,
+                            # cols_justification=('left','center','right','c', 'l', 'bad'),       # Added on GitHub only as of June 2022
+                            display_row_numbers=False,
+                            justification='center',
+                            num_rows=20,
+                            alternating_row_color='lightblue',
+                            key='-TABLE-',
+                            selected_row_colors='red on yellow',
+                            enable_events=True,
+                            expand_x=False,
+                            expand_y=True,
+                            vertical_scroll_only=False,
+                            # Comment out to not enable header and other clicks
+                            enable_click_events=True)]]
+        
+                # ------ Create Window ------
+        window = sg.Window('Jogos Encontrados', layout,
+                        # ttk_theme='clam',
+                        # font='Helvetica 25',
+                        resizable=True
+                        )
+
+        # ------ Event Loop ------
         while True:
-            event, values = self.window_menu.read()
+            event, values = window.read()
             if event == sg.WIN_CLOSED:
                 break
-            elif event == 'BUSCAR':
-                self.searchDatabase(values)
-            elif event == 'Limpar Filtros':
-                self.cleanFields()
 
-    def create_menu(self):
+        window.close()
+
+    def cleanFields(self, window: sg.Window, fields: dict):
+        window['-ID-'].update('')
+        window['-NAME-'].update('')
+        window['-PRICE_MIN-'].update(0)
+        window['-PRICE_MAX-'].update(fields["price"])
+        window['-GENERO-'].update(values=fields["genres"])
+        window['-IDIOMA-'].update(values=fields["languages"])
+        window['-TAGS-'].update(values=fields["tags"])
+        window['-DATA-'].update(values=fields["dates"])
+        window['-DEV-'].update(values=fields["developers"])
+        window['-PUBLISHER-'].update(values=fields["publishers"])
+        window['-REV_EX_POS-'].update(False)
+        window['-REV_MUITO_POS-'].update(False)
+        window['-REV_POS-'].update(False)
+        window['-REV_LIG_POS-'].update(False)
+        window['-REV_NEUTRAS-'].update(False)
+        window['-REV_LIG_NEG-'].update(False)
+        window['-REV_NEG-'].update(False)
+        window['-REV_MUITO_NEG-'].update(False)
+        window['-REV_EX_NEG-'].update(False)
+        window['-DECADE-'].update(values=fields["decades"])
+        window['-SEARCH_TYPE-'].update(1)
+
+    def create_search(self, fields: dict) -> list:
         """Layout da janela principal"""
-        self.menu = [
-            [
-                sg.Text('STEAM BUG'),
-            ],
-            [
+        return [[sg.Text('STEAM BUG'),],
+                [
                 sg.Text('GENERO', justification="center",
                         size=self.block_column_size-3),
                 sg.Text('IDIOMA', justification="center",
@@ -193,34 +290,34 @@ class windows:
                         size=self.block_column_size-3),
                 sg.Text('PUBLISHER', justification="center",
                         size=self.block_column_size-3)
-            ],
-            [
-                sg.Listbox(values=self.generos, select_mode=sg.SELECT_MODE_MULTIPLE, size=(
+                ],
+                [
+                sg.Listbox(values=fields["genres"], select_mode=sg.SELECT_MODE_MULTIPLE, size=(
                     self.block_column_size - 3, self.block_line_size), key='-GENERO-'),
-                sg.Listbox(values=self.idiomas, select_mode=sg.SELECT_MODE_MULTIPLE, size=(
+                sg.Listbox(values=fields["languages"], select_mode=sg.SELECT_MODE_MULTIPLE, size=(
                     self.block_column_size - 3, self.block_line_size), key='-IDIOMA-'),
-                sg.Listbox(values=self.tags, select_mode=sg.SELECT_MODE_MULTIPLE, size=(
+                sg.Listbox(values=fields["tags"], select_mode=sg.SELECT_MODE_MULTIPLE, size=(
                     self.block_column_size - 3, self.block_line_size), key='-TAGS-'),
-                sg.Listbox(values=self.datas, select_mode=sg.SELECT_MODE_MULTIPLE, size=(
+                sg.Listbox(values=fields["dates"], select_mode=sg.SELECT_MODE_MULTIPLE, size=(
                     self.block_column_size - 3, self.block_line_size), key='-DATA-'),
-                sg.Listbox(values=self.devs, select_mode=sg.SELECT_MODE_MULTIPLE, size=(
+                sg.Listbox(values=fields["developers"], select_mode=sg.SELECT_MODE_MULTIPLE, size=(
                     self.block_column_size - 3, self.block_line_size), key='-DEV-'),
-                sg.Listbox(values=self.publishers, select_mode=sg.SELECT_MODE_MULTIPLE, size=(
+                sg.Listbox(values=fields["publishers"], select_mode=sg.SELECT_MODE_MULTIPLE, size=(
                     self.block_column_size - 3, self.block_line_size), key='-PUBLISHER-')
-            ],
-            [
+                ],
+                [
                 sg.Push(), sg.Text('Preço MIN:', justification="center"), sg.Push(), sg.Text(
                     'Preço MAX:', justification="center"), sg.Push()
-            ],
-            [
+                ],
+                [
                 sg.Slider(orientation="h", range=(0, self.max_price), resolution=0.01, key='-PRICE_MIN-'), sg.Slider(
-                    orientation="h", range=(0, self.max_price), resolution=0.01, default_value=self.max_price, key='-PRICE_MAX-')
-            ],
-            [
+                    orientation="h", range=(0, self.max_price), resolution=0.01, default_value=fields["price"], key='-PRICE_MAX-')
+                ],
+                [
                 sg.Text('Década:'), sg.Combo(
-                    values=self.decadas, key='-DECADE-')
-            ],
-            [
+                    values=fields["decades"], key='-DECADE-')
+                ],
+                [
                 [sg.Text('Review:')],
                 [
                     sg.Checkbox('Extremamente Positivas',
@@ -246,16 +343,20 @@ class windows:
                     sg.Checkbox('Extremamente Negativas',
                                 size=self.block_column_size, key='-REV_EX_NEG-')
                 ]
-            ],
-            [
+                ],
+                [
                 sg.Text('AppID:'), sg.InputText(key='-ID-', size=10),
                 sg.Text('Nome:'), sg.InputText(key='-NAME-')
-            ],
-            [
+                ],
+                [
                 sg.Button('BUSCAR'),
-                sg.Button('Limpar Filtros')
-            ]
-        ]
+                sg.Button('Limpar Filtros'),
+                sg.Checkbox('Busca de Overlap',
+                            size=self.block_column_size,default=1, key='-SEARCH_TYPE-')
+                ]
+                ]
 
 
-windows("./code/database.exe")
+main = Program("code\database.exe")
+
+main.run()

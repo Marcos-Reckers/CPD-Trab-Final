@@ -268,10 +268,12 @@ namespace IO
             return false;
 
         const auto &DBPath = folder + DBName;
-        return fs::exists(DBPath) && fs::exists(DBPath + patExt) &&
-               fs::exists(DBPath + langExt) && fs::exists(DBPath + genreExt) &&
-               fs::exists(DBPath + devExt) && fs::exists(DBPath + pubExt) &&
-               fs::exists(DBPath + tagExt);
+        return (fs::exists(DBPath) && fs::exists(DBPath + dateExt) &&
+                fs::exists(DBPath + devExt) && fs::exists(DBPath + genreExt) &&
+                fs::exists(DBPath + appidExt) && fs::exists(DBPath + langExt) &&
+                fs::exists(DBPath + patExt) && fs::exists(DBPath + priceExt) &&
+                fs::exists(DBPath + pubExt) && fs::exists(DBPath + reviewExt) &&
+                fs::exists(DBPath + tagExt));
     }
 
     std::vector<int> findInHash(const std::string &path, const std::string &key)
@@ -350,7 +352,7 @@ namespace IO
             std::getline(file, line);
             auto semi = line.find_first_of(';');
             auto priceStr = line.substr(0, semi);
-            if(priceStr == "")
+            if (priceStr == "")
                 continue;
             auto price = std::stoi(priceStr);
 
@@ -380,7 +382,7 @@ namespace IO
             std::getline(file, line);
             auto semi = line.find_first_of(';');
             auto year = line.substr(0, semi);
-            if (year == "TBA" || year == "Nan")
+            if (year == "TBA" || year == "NaN" || year == "")
                 continue;
 
             auto intYear = std::stoi(year);
