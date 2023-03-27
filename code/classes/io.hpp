@@ -7,16 +7,17 @@
 namespace IO
 {
     const std::string folder = "./data";
-    const std::string DBName = "/Steam.db"; // Path to the database.
-    const std::string patExt = ".pat";      // Path to the patricia tree.
-    const std::string langExt = ".lang";    // Path to the languages table.
-    const std::string genreExt = ".genre";  // Path to the genres table.
-    const std::string devExt = ".dev";      // Path to the developers table.
-    const std::string pubExt = ".pub";      // Path to the publishers table.
-    const std::string tagExt = ".tag";      // Path to the tags table.
-    const std::string dateExt = ".date";    // Path to the release dates table.
-    const std::string priceExt = ".price";  // Path to the prices table.
+    const std::string DBName = "/Steam.db";  // Path to the database.
+    const std::string patExt = ".pat";       // Path to the patricia tree.
+    const std::string langExt = ".lang";     // Path to the languages table.
+    const std::string genreExt = ".genre";   // Path to the genres table.
+    const std::string devExt = ".dev";       // Path to the developers table.
+    const std::string pubExt = ".pub";       // Path to the publishers table.
+    const std::string tagExt = ".tag";       // Path to the tags table.
+    const std::string dateExt = ".date";     // Path to the release dates table.
+    const std::string priceExt = ".price";   // Path to the prices table.
     const std::string reviewExt = ".review"; // Path to the reviews table.
+    const std::string appidExt = ".ids";     // Path to the csv file.
 
     const int urlIndex = 0;         // Index of the url in the csv file.
     const int nameIndex = 1;        // Index of the name in the csv file.
@@ -41,4 +42,6 @@ namespace IO
     std::vector<std::string> getKeys(std::ifstream &file);
 
     std::vector<int> searchFile(std::ifstream &file, const std::string &key);
+    std::vector<int> searchFilePrice(std::ifstream &file, int minPrice, int maxPrice);
+    std::vector<int> searchFileDec(std::ifstream &file, int Decade);
 }

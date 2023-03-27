@@ -1,3 +1,4 @@
 /cpd
 *.exe
 settings.json
+/data

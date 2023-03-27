@@ -61,6 +61,7 @@ namespace DB
             return os;
         };
         std::string toStr();
+        std::string toStrNoDollar();
     };
 
     class ReleaseDate

@@ -239,4 +239,24 @@ namespace DB
         ss << *this;
         return ss.str();
     }
+    
+    std::string GamePrice::toStrNoDollar()
+    {
+        std::stringstream ss;
+
+        if (this->price == -1)
+        {
+            ss << "-1";
+            
+        }
+        else if (this->price == 0)
+        {
+            ss << "0";
+        }
+        else
+        {
+            ss << this->price / 100 << "." << this->price % 100;
+        }
+        return ss.str();
+    }
 }

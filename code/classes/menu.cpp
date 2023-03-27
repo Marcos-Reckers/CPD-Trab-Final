@@ -177,13 +177,93 @@ namespace MENU
         return ids;
     }
 
-    std::vector<int> intersection(const std::vector<int> &a, const std::vector<int> &b)
+    std::vector<int> searchFilePrice(const std::string &path, int minPrice, int maxPrice)
+    {
+        std::vector<int> ids;
+        std::ifstream file;
+        file.open(path, std::ios::binary);
+
+        if (!file.good())
+            return ids;
+
+        if(minPrice > maxPrice)
+            std::swap(minPrice, maxPrice);
+
+        if(maxPrice == -1)
+            maxPrice = INT_MAX;
+
+        auto id = IO::searchFilePrice(file, minPrice, maxPrice);
+
+        file.close();
+
+        return ids;
+    }
+
+    std::vector<int> searchFileDec(const std::string &path, int Decade)
+    {
+        std::vector<int> ids;
+        std::ifstream file;
+        file.open(path, std::ios::binary);
+
+        if (!file.good())
+            return ids;
+
+        auto id = IO::searchFileDec(file, Decade);
+
+        file.close();
+
+        return ids;
+    }
+
+    std::vector<DB::Game> searchGames(const std::vector<int> &ids)
+    {
+        std::vector<DB::Game> games;
+
+        Tables::Hash<int> hash;
+        std::ifstream file(IO::folder + IO::DBName + IO::appidExt, std::ios::binary);
+
+        if (!file.good())
+            return games;
+
+        hash.readFromFile(file);
+        file.close();
+
+        std::ifstream gameFile(IO::folder + IO::DBName, std::ios::binary);
+        for (auto &i : ids)
+        {
+            auto index = hash.Search(i);
+            if (index.size() == 0)
+                continue;
+
+            auto &gameIndex = index[0];
+            DB::Game game;
+            game.readFromFile(gameFile, gameIndex);
+            gameFile.seekg(0);
+
+            games.push_back(game);
+        }
+        gameFile.close();
+        return games;
+    }
+
+    std::vector<int> intersection(const std::vector<int> &a, const std::vector<int> &b, int type)
     {
         std::unordered_set<int> temp;
         for(auto i : a)
+        {
             for(auto j : b)
-                if(i == j)
+            {
+                if (i == j)
+                {
                     temp.insert(i);
+                }
+                else if(type)
+                {
+                    temp.insert(i);
+                    temp.insert(j);
+                }
+            }
+        }
 
         return std::vector<int>(temp.begin(), temp.end());
     }
@@ -204,7 +284,20 @@ namespace MENU
         auto strings = STR::customSplit(search, ';');
 
         // offset 4 to remove the "gen=" part
-        std::cout << strings.size() << std::endl;
+        auto type = std::stoi(strings[12].substr(4));
+
+        auto gameID = strings[10].substr(4).length() ? std::stoi(strings[10].substr(4)) : -1;
+        if (gameID != -1 && type == 0)
+        {
+            auto games = searchGames({gameID});
+            if (games.size() == 0)
+            {
+                std::cout << "No games with that ID found." << std::endl;
+                return 0;
+            }
+            std::cout << games[0] << std::endl;
+            return 0;
+        }
 
         auto genres = STR::vectorFromList<std::string>(strings[0].substr(4));
         auto languages = STR::vectorFromList<std::string>(strings[1].substr(4));
@@ -212,26 +305,25 @@ namespace MENU
         auto dates = STR::vectorFromList<std::string>(strings[3].substr(4));
         auto developers = STR::vectorFromList<std::string>(strings[4].substr(4));
         auto publishers = STR::vectorFromList<std::string>(strings[5].substr(4));
-        auto minPrice = std::stof(strings[6].substr(4));
-        auto maxPrice = std::stof(strings[7].substr(4));
+        auto minPrice = std::stoi(strings[6].substr(4));
+        auto maxPrice = std::stoi(strings[7].substr(4));
         auto decade = strings[8].substr(4).length() ? std::stoi(strings[8].substr(4)) : -1;
         auto reviews = STR::vectorFromList<std::string>(strings[9].substr(4));
-        auto gameID = strings[10].substr(4).length() ? std::stoi(strings[10].substr(4)) : -1;
         auto name = strings[11].substr(4);
 
-        //! Debug, seeing for the correct substrings
-        print(genres, "Genres");
-        print(languages, "Languages");
-        print(tags, "Tags");
-        print(dates, "Dates");
-        print(developers, "Developers");
-        print(publishers, "Publishers");
-        std::cout << "Min Price: " << minPrice << std::endl;
-        std::cout << "Max Price: " << maxPrice << std::endl;
-        std::cout << "Decade: " << decade << std::endl;
-        print(reviews, "Reviews");
-        std::cout << "Game ID: " << gameID << std::endl;
-        std::cout << "Name: " << name << std::endl;
+        // //! Debug, seeing for the correct substrings
+        // print(genres, "Genres");
+        // print(languages, "Languages");
+        // print(tags, "Tags");
+        // print(dates, "Dates");
+        // print(developers, "Developers");
+        // print(publishers, "Publishers");
+        // std::cout << "Min Price: " << minPrice << std::endl;
+        // std::cout << "Max Price: " << maxPrice << std::endl;
+        // std::cout << "Decade: " << decade << std::endl;
+        // print(reviews, "Reviews");
+        // std::cout << "Game ID: " << gameID << std::endl;
+        // std::cout << "Name: " << name << std::endl;
 
         std::array<std::pair<std::vector<int>, bool>, 12> appids;
         for(auto &i : appids)
@@ -255,46 +347,42 @@ namespace MENU
         if (publishers.size() != 0)
             appids[5] = {searchFile(IO::folder + IO::DBName + IO::pubExt, publishers), true}; // publishers Ids
         
-        // if(minPrice != 0.0f || maxPrice != 500.0f)
-        //     appids[6] = {searchFilePrice(IO::folder + IO::DBName + IO::priceExt, minPrice, maxPrice), true}; // price Ids
+        if(minPrice != -1 || maxPrice != -1) //Todo change the max price to a variable
+            appids[6] = {searchFilePrice(IO::folder + IO::DBName + IO::priceExt, minPrice, maxPrice), true}; // price Ids
 
-        // if(decade != -1)
-        //     appids[7] = {searchFile(IO::folder + IO::DBName + IO::decadeExt, decade), true}; // decade Ids
+        if(decade != -1)
+            appids[7] = {searchFileDec(IO::folder + IO::DBName + IO::dateExt, decade), true}; // decade Ids
 
         if(reviews.size() != 0)
             appids[8] = {searchFile(IO::folder + IO::DBName + IO::reviewExt, reviews), true}; // reviews Ids
-
-        // if(gameID != -1)
-        //     appids[9] = {searchFile(IO::folder + IO::DBName + IO::gameIDExt, gameID), true}; // gameID Ids
 
         // if(name.length() != 0)
         //     appids[10] = {searchFile(IO::folder + IO::DBName + IO::nameExt, name), true}; // name Ids
 
         std::vector<int> Ids;
-        size_t index = 0;
-        for(size_t i = index; i < appids.size(); i++)
+        bool first = true;
+        for(auto &i : appids)
         {
-            if(appids[i].second)
+            if (i.second && first)
             {
-                Ids = appids[i].first;
-                index = i;
-                break;
+                first = false;
+                Ids = i.first;
+            }
+
+            if (i.second)
+            {
+                Ids = intersection(Ids, i.first, type);
             }
         }
 
-        for(size_t i = index; i < appids.size(); i++)
+        auto games = searchGames(Ids);
+        if (games.size() == 0)
         {
-            if(appids[i].second)
-            {
-                Ids = intersection(Ids, appids[i].first);
-            }
+            std::cout << "No games found." << std::endl;
+            return 0;
         }
-
-        for(auto id : Ids)
-        {
-            std::cout << id << ';';
-        }
-
+        for(auto &i : games)
+            std::cout << i << std::endl;
         return 0;
     }
 

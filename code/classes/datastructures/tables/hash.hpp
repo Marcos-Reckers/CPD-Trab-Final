@@ -129,4 +129,8 @@ namespace Tables
 
     template <>
     void Hash<std::string>::Insert(const std::vector<std::string> &keys, int data);
+    template <>
+    int Hash<int>::writeToFile(std::ofstream &file);
+    template <>
+    int Hash<int>::readFromFile(std::ifstream &file);
 }
