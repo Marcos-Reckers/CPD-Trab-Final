@@ -137,6 +137,7 @@ namespace IO
         Tables::Hash<std::string> releaseDates; // Hash table of release dates.
         Tables::Hash<std::string> prices;       // Hash table of prices.
         Tables::Hash<std::string> reviews;      // Hash table of reviews.
+        Tables::Hash<int> appids;               // Hash table of appids.
 
         //* Open the input file
         std::ifstream input(path); // File to be read.
@@ -168,8 +169,9 @@ namespace IO
             developers.Insert(STR::customSplit(strings[developerIndex], ','), game.getAppid());
             publishers.Insert(STR::customSplit(strings[publisherIndex], ','), game.getAppid());
             releaseDates.Insert(game.getReleaseDate().getYearStr(), game.getAppid());
-            prices.Insert(game.getPrice().toStr(), game.getAppid());
+            prices.Insert(std::to_string(game.getPriceInt()), game.getAppid());
             reviews.Insert(DB::ReviewsToStr(game.getReviews()), game.getAppid());
+            appids.Insert(game.getAppid(), games.size());
 
             // Add the game to the vector.
             games.push_back(game); // Add the game to the vector.
@@ -249,6 +251,12 @@ namespace IO
             return -1;
         reviews.writeToFile(reviewFile);
         reviewFile.close();
+
+        std::ofstream appidFile(DBPath + appidExt, std::ios::binary);
+        if (!appidFile.good())
+            return -1;
+        appids.writeToFile(appidFile);
+        appidFile.close();
 
         return 0;
     }
@@ -330,5 +338,66 @@ namespace IO
         }
 
         return std::vector<int>();
+    }
+
+    std::vector<int> searchFilePrice(std::ifstream &file, int minPrice, int maxPrice)
+    {
+        std::vector<int> appids;
+
+        std::string line;
+        while (!file.eof())
+        {
+            std::getline(file, line);
+            auto semi = line.find_first_of(';');
+            auto priceStr = line.substr(0, semi);
+            if(priceStr == "")
+                continue;
+            auto price = std::stoi(priceStr);
+
+            if (price >= minPrice && price <= maxPrice)
+            {
+                auto ids = STR::customSplit(line.substr(semi + 1), ' ');
+
+                for (auto id : ids)
+                {
+                    if (id == "\r" || id == "")
+                        continue;
+                    appids.push_back(std::stoi(id));
+                }
+            }
+        }
+
+        return appids;
+    }
+
+    std::vector<int> searchFileDec(std::ifstream &file, int Decade)
+    {
+        std::vector<int> appids;
+
+        std::string line;
+        while (!file.eof())
+        {
+            std::getline(file, line);
+            auto semi = line.find_first_of(';');
+            auto year = line.substr(0, semi);
+            if (year == "TBA" || year == "Nan")
+                continue;
+
+            auto intYear = std::stoi(year);
+
+            if (intYear >= Decade && intYear < Decade + 10)
+            {
+                auto ids = STR::customSplit(line.substr(semi + 1), ' ');
+
+                for (auto id : ids)
+                {
+                    if (id == "\r" || id == "")
+                        continue;
+                    appids.push_back(std::stoi(id));
+                }
+            }
+        }
+
+        return appids;
     }
 }
