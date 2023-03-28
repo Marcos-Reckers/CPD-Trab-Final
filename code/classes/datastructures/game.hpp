@@ -38,18 +38,18 @@ namespace DB
                << " Price: " << game.price << " Reviews: " << ReviewsToStr(game.reviews);
             return os;
         };
-        std::string DataOut() const
+        std::vector<std::string> DataOut() const
         {
-            std::stringstream ss;
-            ss << this->getAppid() << ";"
-               << this->getName() << ";"
-               << this->getDeveloper() << ";"
-               << this->getPublisher() << ";"
-               << this->getReleaseDate() << ";"
-               << this->getTags() << ";"
-               << this->getPrice() << ";"
-               << DB::ReviewsToStr(this->getReviews());
-            return ss.str();
+            std::vector<std::string> data;
+            data.push_back(std::to_string(this->getAppid()));
+            data.push_back(this->getName());
+            data.push_back(this->getDeveloper());
+            data.push_back(this->getPublisher());
+            data.push_back(this->getReleaseDate().toStr());
+            data.push_back(this->getTags());
+            data.push_back(this->getPrice().toStr());
+            data.push_back(ReviewsToStr(this->getReviews()));
+            return data;
         }
     };
 }
