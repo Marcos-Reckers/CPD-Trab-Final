@@ -31,14 +31,10 @@ namespace IO
     const int genreIndex = 9;       // Index of the genre in the csv file.
     const int priceIndex = 10;      // Index of the price in the csv file.
 
-    std::vector<DB::Game> importGames(const std::string &path, size_t limit = -1);
-    int exportGames(const std::string &path, const std::vector<DB::Game> &games);
-    DB::Game getGame(const std::string &path, size_t index);
     int appendGame(const std::string &path, DB::Game &game);
     std::vector<DB::Game> loadGames(const std::string &path);
     int ConvertDatabase(const std::string &path, size_t limit = -1);
     bool databaseExists();
-    std::vector<int> findInHash(const std::string &path, const std::string &key);
     std::vector<std::string> getKeys(std::ifstream &file);
 
     std::vector<int> searchFile(std::ifstream &file, const std::string &key);

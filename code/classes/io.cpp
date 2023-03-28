@@ -37,36 +37,6 @@ namespace IO
         return games;
     }
 
-    int exportGames(const std::string &path, const std::vector<DB::Game> &games)
-    {
-        std::ofstream file(path, std::ios::binary); // File to be written to.
-        size_t Filesize = 0;                        // Size of the file.
-
-        if (!file.good())
-            return -1;
-
-        for (auto game : games)
-        {
-            Filesize += game.writeToFile(file); // Write the game to the file.
-        }
-
-        file.close();
-
-        return Filesize;
-    }
-
-    DB::Game getGame(const std::string &path, size_t index)
-    {
-        std::ifstream file(path, std::ios::binary); // File to be read.
-
-        if (!file.good())
-            return DB::Game();
-
-        DB::Game game; // Game to be returned.
-
-        return game.readFromFile(file, index) ? game : DB::Game(); // Read the game from the file.
-    }
-
     int appendGame(const std::string &path, DB::Game &game)
     {
         std::ofstream file(path, std::ios::binary | std::ios::app); // File to be written to.
@@ -274,31 +244,6 @@ namespace IO
                 fs::exists(DBPath + patExt) && fs::exists(DBPath + priceExt) &&
                 fs::exists(DBPath + pubExt) && fs::exists(DBPath + reviewExt) &&
                 fs::exists(DBPath + tagExt));
-    }
-
-    std::vector<int> findInHash(const std::string &path, const std::string &key)
-    {
-        std::vector<int> appids;
-        std::string line;
-        std::ifstream file(path, std::ios::binary);
-        if (!file.good())
-            return appids;
-
-        while (!file.eof())
-        {
-            std::getline(file, line);
-            if (line.starts_with(key))
-            {
-                auto ids = STR::customSplit(line, ',');
-                for (auto id : ids)
-                {
-                    appids.push_back(std::stoi(id));
-                }
-                return appids;
-            }
-        }
-
-        return appids;
     }
 
     std::vector<std::string> getKeys(std::ifstream &file)
