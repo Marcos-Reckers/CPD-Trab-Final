@@ -33,7 +33,7 @@ namespace IO
 
     int appendGame(const std::string &path, DB::Game &game);
     std::vector<DB::Game> loadGames(const std::string &path);
-    int ConvertDatabase(const std::string &path, size_t limit = -1);
+    int ConvertDatabase(const std::string &path, size_t limit);
     bool databaseExists();
     std::vector<std::string> getKeys(std::ifstream &file);
 

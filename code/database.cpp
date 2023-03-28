@@ -24,11 +24,16 @@ namespace database
 
     std::string convert(const std::string &path, int size)
     {
+        size_t i = size;
         auto begin = std::chrono::high_resolution_clock::now(); // Start the timer.
-        auto temp = IO::ConvertDatabase(path, size);
+        auto outCode = IO::ConvertDatabase(path, i);
         auto end = std::chrono::high_resolution_clock::now(); // Stop the timer.
         std::stringstream ss;
-        ss << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " ms" << std::endl;
+        if(outCode == 0)
+            ss << "Converted database in ";
+        else
+            ss << "Failed to convert database in ";
+        ss << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " ms";
 
         return ss.str();
     }
@@ -305,7 +310,7 @@ namespace database
             break;
         }
 
-        auto keys =  IO::getKeys(file);
+        auto keys = IO::getKeys(file);
         file.close();
         return keys;
     }
