@@ -2,3 +2,6 @@
 *.exe
 settings.json
 /data
+__pycache__
+/code/build
+program.cpp
