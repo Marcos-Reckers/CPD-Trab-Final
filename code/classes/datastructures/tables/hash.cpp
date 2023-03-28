@@ -16,11 +16,11 @@ namespace Tables
     int Hash<int>::writeToFile(std::ofstream &file)
     {
         int size = this->hashTable.size();
-        file.write((char *)&size, sizeof(this->hashTable));
+        file.write((char *)&size, sizeof(int));
         for(auto item : this->hashTable)
         {
             file.write((char *)&item.first, sizeof(int));
-            auto DataSize = item.second.size();
+            int DataSize = item.second.size();
             file.write((char *)&DataSize, sizeof(int));
             for(auto data : item.second)
             {
@@ -39,9 +39,9 @@ namespace Tables
         {
             int key = 0;
             file.read((char *)&key, sizeof(int));
-            std::vector<int> data;
             int dataSize = 0;
             file.read((char *)&dataSize, sizeof(int));
+            std::vector<int> data;
             for(int j = 0; j < dataSize; j++)
             {
                 int dataItem = 0;

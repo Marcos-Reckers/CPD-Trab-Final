@@ -1,112 +1,5 @@
 import PySimpleGUI as sg
-import subprocess
-import os
-
-
-class database:
-    def __init__(self, DB_PATH: str):
-        self.DB_PATH = DB_PATH
-
-    def Validate(self) -> bool:
-        validate = subprocess.run([self.DB_PATH, '-v'], capture_output=True)
-        if '0' in validate.stdout.decode('utf-8'):
-            return False
-        else:
-            return True
-
-    def CheckExeExistence(self) -> bool:
-        return not os.path.isfile(self.DB_PATH)
-
-    def create(self, path: str) -> bool:
-        saida_c = subprocess.run(
-            [self.DB_PATH, '-c', path, '-1'], capture_output=True)
-        print(saida_c.stdout.decode('utf-8'))
-        if saida_c.returncode == 0:
-            return True
-        else:
-            return False
-
-    def fields(self, field: str) -> list:
-        match field:
-            case 'genre':
-                database_field = 'gen'
-            case 'language':
-                database_field = 'lan'
-            case 'tag':
-                database_field = 'tag'
-            case 'developer':
-                database_field = 'dev'
-            case 'publisher':
-                database_field = 'pub'
-            case 'date':
-                database_field = 'dat'
-            case 'price':
-                database_field = 'pri'
-            case 'decade':
-                database_field = 'dat'
-
-        ret = subprocess.run([self.DB_PATH, '-f', database_field],
-                             capture_output=True).stdout.decode('utf-8')
-
-        fields = ret.split(';')
-        sortedFields = sorted(fields)
-
-        while '' in sortedFields:
-            sortedFields.remove('')
-        while '\r\n' in sortedFields:
-            sortedFields.remove('\r\n')
-
-        if field == 'decade':
-            decade: int = int(sortedFields[0])
-            offsetDec = decade % 10
-            initialDec = decade - offsetDec
-            # -3 para ignorar TBA e NaN
-            finalDec = int(sortedFields[len(sortedFields)-3]) + 10
-            return list(range(initialDec, finalDec, 10))
-        elif field == 'price':
-            price: int = 0
-            for i in sortedFields:
-                if i == '' or i == '\r\n':
-                    continue
-                num = int(i)
-                if num > price:
-                    price = num
-            max_price = float(price) / 100
-            return [max_price]
-
-        return sortedFields
-
-
-class Program:
-    def __init__(self, DB_PATH: str) -> None:
-        self.database = database(DB_PATH)
-        self.windowManager = windows()
-
-    def run(self):
-        securityChecks = True
-        while securityChecks:
-            if self.database.CheckExeExistence():
-                return self.windowManager.fail_popup(text='O programa de base de dados não existe')
-
-            if not self.database.Validate():
-                csv_path = self.windowManager.create_DB()
-                self.database.create(csv_path)
-                continue
-
-            securityChecks = False
-
-        fields: dict = {}
-        fields["languages"] = self.database.fields('language')
-        fields["genres"] = self.database.fields('genre')
-        fields["tags"] = self.database.fields('tag')
-        fields["developers"] = self.database.fields('developer')
-        fields["publishers"] = self.database.fields('publisher')
-        fields["dates"] = self.database.fields('date')
-        fields["price"] = self.database.fields('price')[0]
-        fields["decades"] = self.database.fields('decade')
-
-        self.windowManager.search(fields)
-
+import database
 
 class windows:
     def __init__(self, Colum_size: int = 18, Line_size: int = 10) -> None:
@@ -179,48 +72,34 @@ class windows:
     def searchDatabase(self, values):
         """Procura na base de dados"""
         output: dict = {}
-        output['name'] = values['-NAME-']
-        output['id'] = values['-ID-']
-        output['date'] = values['-DATA-']
-        output['price_min'] = -1 if float(values['-PRICE_MIN-']
-                                          ) == 0 else int(float(values['-PRICE_MIN-']) * 100)
-        output['price_max'] = -1 if float(values['-PRICE_MAX-']) == self.max_price else int(
-            float(values['-PRICE_MAX-']) * 100)
-        output['genres'] = values['-GENERO-']
-        output['languages'] = values['-IDIOMA-']
-        output['tags'] = values['-TAGS-']
-        output['developers'] = values['-DEV-']
-        output['publishers'] = values['-PUBLISHER-']
-        output['reviews'] = self.translate_reviews([values['-REV_EX_POS-'], values['-REV_MUITO_POS-'], 
+        output['name']: str = values['-NAME-']
+        output['id']: int = int(values['-ID-']) if values['-ID-'] != '' else -1
+        output['date']: list[str] = values['-DATA-']
+        output['price_min']: int = -1 if float(values['-PRICE_MIN-']) == 0 else int(float(values['-PRICE_MIN-']) * 100)
+        output['price_max']: int = -1 if float(values['-PRICE_MAX-']) == self.max_price else int(float(values['-PRICE_MAX-']) * 100)
+        output['genres']: list[str] = values['-GENERO-']
+        output['languages']: list[str] = values['-IDIOMA-']
+        output['tags']: list[str] = values['-TAGS-']
+        output['developers']: list[str] = values['-DEV-']
+        output['publishers']: list[str] = values['-PUBLISHER-']
+        output['reviews']: list[str] = self.translate_reviews([values['-REV_EX_POS-'], values['-REV_MUITO_POS-'],
                                                     values['-REV_POS-'], values['-REV_LIG_POS-'],
                                                     values['-REV_NEUTRAS-'], values['-REV_LIG_NEG-'], 
                                                     values['-REV_NEG-'], values['-REV_MUITO_NEG-'], 
                                                     values['-REV_EX_NEG-']])
-        output['decades'] = values['-DECADE-']
-        output['search']: int = 0 if values['-SEARCH_TYPE-'] else 1
+        output['decades']: int = -1 if values['-DECADE-'] == '' else int(values['-DECADE-'])
+        output['search']: bool = values['-SEARCH_TYPE-']
 
-        output = f"gen={output['genres']};lan={output['languages']};tag={output['tags']};dat={output['date']};dev={output['developers']};pub={output['publishers']};min={output['price_min']};max={output['price_max']};dec={output['decades']};rev={output['reviews']};gid={output['id']};nam={output['name']};typ={output['search']}"
-    
-        saida_c = subprocess.run(
-            ['./code/database.exe', '-s', output], capture_output=True)
-        gamesFound = saida_c.stdout.decode('utf-8').split('\n')
-
-        games: list[list[str]] = []
-
-        for game in gamesFound:
-            i = game.split(';')
-            if not i == ['']:
-                games.append(i)
-
+        gamesFound = database.Search(output['genres'], output['languages'], output['tags'], output['date'], output['developers'], output['publishers'],
+                                     output['reviews'], output['name'], output['price_min'], output['price_max'], output['decades'], output['id'], output['search'])
         fields = ["AppID", "Nome", "Desenvolvedor", "Publicador", "Data de Lançamento", "Tags", "Preço", "Reviews"]
 
-        self.showGames(games, fields)
+        self.showGames(gamesFound, fields)
 
-    def showGames(self, gamesFound: list[list[str]], fields: list[str]):
+    def showGames(self, gamesFound, fields: list[str]):
         """Mostra os jogos encontrados na janela de resultados"""
         # ------ Table Definition ------
-
-        layout = [[sg.Table(values=gamesFound[:], headings=fields, max_col_width=20,
+        layout = [[sg.Table(values=gamesFound, headings=fields, max_col_width=20,
                             auto_size_columns=True,
                             # cols_justification=('left','center','right','c', 'l', 'bad'),       # Added on GitHub only as of June 2022
                             display_row_numbers=False,
@@ -355,8 +234,3 @@ class windows:
                             size=self.block_column_size,default=1, key='-SEARCH_TYPE-')
                 ]
                 ]
-
-
-main = Program("code\database.exe")
-
-main.run()

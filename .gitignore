@@ -3,5 +3,7 @@
 settings.json
 /data
 __pycache__
-/code/build
-program.cpp
+/build
+DB.cpp
+/dist
+/DB.egg-info

@@ -5,7 +5,7 @@ namespace STR
     std::vector<std::string> customSplit(const std::string &str, char separator)
     {
         std::vector<std::string> strings; // Vector of strings to be returned.
-        int startIndex = 0, endIndex = 0; // Start and end index of the word.
+        size_t startIndex = 0, endIndex = 0; // Start and end index of the word.
         for (size_t i = 0; i <= str.size(); i++)
         {
             // If we reached the end of the word or the end of the input.

@@ -71,7 +71,7 @@ namespace IO
             return 0;
         }
 
-        return file2.tellg() / size;
+        return int(file2.tellg()) / size;
     }
 
     std::vector<DB::Game> loadGames(const std::string &path)
@@ -83,7 +83,7 @@ namespace IO
 
         std::vector<DB::Game> games; // Game to be returned.
 
-        for (size_t i = 0; !file.eof(); i++)
+        for (int i = 0; !file.eof(); i++)
         {
             DB::Game game; // Game to be returned.
 
@@ -96,6 +96,7 @@ namespace IO
 
     int ConvertDatabase(const std::string &path, size_t limit)
     {
+        std::cout << limit << std::endl;
         //! Imports the Data
         std::vector<DB::Game> games;            // Vector of games
         Trees::Patricia patricia;               // Patricia tree
