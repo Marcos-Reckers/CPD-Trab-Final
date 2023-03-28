@@ -13,7 +13,8 @@ class windows:
         window = sg.Window(
             'Steam BUG',
             search_screen,
-            element_justification='center'
+            element_justification='center',
+            resizable=True
         )
 
         while True:
@@ -111,7 +112,7 @@ class windows:
                             key='-TABLE-',
                             selected_row_colors='red on yellow',
                             enable_events=True,
-                            expand_x=False,
+                            expand_x=True,
                             expand_y=True,
                             vertical_scroll_only=False,
                             # Comment out to not enable header and other clicks
