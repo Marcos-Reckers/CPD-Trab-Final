@@ -96,7 +96,6 @@ namespace IO
 
     int ConvertDatabase(const std::string &path, size_t limit)
     {
-        std::cout << limit << std::endl;
         //! Imports the Data
         std::vector<DB::Game> games;            // Vector of games
         Trees::Patricia patricia;               // Patricia tree
