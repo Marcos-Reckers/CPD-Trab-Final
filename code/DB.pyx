@@ -3,10 +3,10 @@ from libcpp.string cimport string
 from libcpp cimport bool as bool_t
 
 
-cdef extern from "code/database.hpp" namespace "database":
+cdef extern from "database.hpp" namespace "database":
     string convert(const string &, int)
     
-    vector[vector[string]] search(const vector[string] &, const vector[string] &, const vector[string] &, const vector[string] &, const vector[string] &, const vector[string] &, const vector[string] &, const string &, int, int, int, int, bool)
+    vector[vector[string]] search(const vector[string] &, const vector[string] &, const vector[string] &, const vector[string] &, const vector[string] &, const vector[string] &, const vector[string] &, const string &, int, int, int, int, bool_t)
 
     bool_t validate()
 

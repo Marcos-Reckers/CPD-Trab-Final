@@ -2,8 +2,7 @@
 *.exe
 settings.json
 /data
+/code/data
 __pycache__
-/build
-DB.cpp
-/dist
-/DB.egg-info
+/code/build
+/code/DB.cpp

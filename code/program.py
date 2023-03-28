@@ -17,14 +17,14 @@ class Program:
             securityChecks = False
 
         fields: dict = {}
-        fields["languages"] = database.GetField('language')
-        fields["genres"] = database.GetField('genre')
-        fields["tags"] = database.GetField('tag')
-        fields["developers"] = database.GetField('developer')
-        fields["publishers"] = database.GetField('publisher')
-        fields["dates"] = database.GetField('date')
-        fields["price"] = database.GetField('price')[0]
-        fields["decades"] = database.GetField('decade')
+        fields["languages"] = self.fields('language')
+        fields["genres"] = self.fields('genre')
+        fields["tags"] = self.fields('tag')
+        fields["developers"] = self.fields('developer')
+        fields["publishers"] = self.fields('publisher')
+        fields["dates"] = self.fields('date')
+        fields["price"] = self.fields('price')[0]
+        fields["decades"] = self.fields('decade')
 
         self.windowManager.search(fields)
 
@@ -56,7 +56,7 @@ class Program:
             sortedFields.remove('\r\n')
 
         if field == 'decade':
-            decade: int = int(sortedFields)
+            decade: int = int(sortedFields[0])
             offsetDec = decade % 10
             initialDec = decade - offsetDec
             # -3 para ignorar TBA e NaN

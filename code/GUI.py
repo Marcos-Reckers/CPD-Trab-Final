@@ -29,7 +29,7 @@ class windows:
         """Cria a janela de erro"""
         sg.popup(title=title, text=text)
 
-    def create_DB(self) -> bool:
+    def create_DB(self) -> str:
         """Cria a janela para procurar e criar a base de dados"""
         create_DB_screen = [
             [sg.Text('Caminho para DB')],
@@ -45,6 +45,8 @@ class windows:
             sg.user_settings_set_entry(
                 '-filenames-', list(set(sg.user_settings_get_entry('-filenames-', []) + [values['-FILENAME-'], ])))
             sg.user_settings_set_entry('-last filename-', values['-FILENAME-'])
+
+        return values['-FILENAME-']
 
     def translate_reviews(self, values: list[bool]):
         """Traduz os valores de reviews para o formato da base de dados"""
@@ -88,7 +90,7 @@ class windows:
                                                     values['-REV_NEG-'], values['-REV_MUITO_NEG-'], 
                                                     values['-REV_EX_NEG-']])
         output['decades']: int = -1 if values['-DECADE-'] == '' else int(values['-DECADE-'])
-        output['search']: bool = values['-SEARCH_TYPE-']
+        output['search']: bool = not values['-SEARCH_TYPE-']
 
         gamesFound = database.Search(output['genres'], output['languages'], output['tags'], output['date'], output['developers'], output['publishers'],
                                      output['reviews'], output['name'], output['price_min'], output['price_max'], output['decades'], output['id'], output['search'])
