@@ -75,9 +75,7 @@ class Program:
 
         return sortedFields
 
-def main():
-    main = Program()
-    main.run()
 
 if __name__ == "__main__":
-    main()
+    main = Program()
+    main.run()
