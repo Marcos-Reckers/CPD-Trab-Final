@@ -168,10 +168,12 @@ namespace IO
 
         // outputs the patricia tree to the file
         std::ofstream patriciaFile(DBPath + patExt, std::ios::binary);
-        if (!patriciaFile.good())
+        std::ofstream patriciaFile2(DBPath + patExt + ".str", std::ios::binary);
+        if (!patriciaFile.good() || !patriciaFile2.good())
             return -1;
-        patricia.writeToFile(patriciaFile);
+        patricia.writeToFile(patriciaFile, patriciaFile2);
         patriciaFile.close();
+        patriciaFile2.close();
 
         //* outputs the tables to the file
         std::ofstream langFile(DBPath + langExt, std::ios::binary);
@@ -344,6 +346,15 @@ namespace IO
                 }
             }
         }
+
+        return appids;
+    }
+
+    std::vector<int> searchNames(std::ifstream &file, std::ifstream &strings, const std::string &key)
+    {
+        Trees::Patricia patricia;
+        patricia.readFromFile(file, strings);
+        auto appids = patricia.SearchPrefix(key);
 
         return appids;
     }

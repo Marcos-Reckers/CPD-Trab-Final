@@ -131,6 +131,24 @@ namespace database
         return games;
     }
 
+    std::vector<int> searchNames(const std::string &path, const std::string &name)
+    {
+        std::ifstream file;
+        std::ifstream file2;
+        file.open(path, std::ios::binary);
+        file2.open(path + ".str", std::ios::binary);
+
+        if (!file.good() || !file2.good())
+            return std::vector<int>();
+
+        auto ids = IO::searchNames(file, file2, name);
+
+        file.close();
+        file2.close();
+
+        return ids;
+    }
+
     std::vector<int> intersection(const std::vector<int> &a, const std::vector<int> &b, bool type)
     {
         std::unordered_set<int> temp;
@@ -205,8 +223,8 @@ namespace database
         if (reviews.size() != 0)
             appids[8] = {searchFile(IO::folder + IO::DBName + IO::reviewExt, reviews), true}; // reviews Ids
 
-        // if(name.length() != 0)
-        //     appids[10] = {searchFile(IO::folder + IO::DBName + IO::nameExt, name), true}; // name Ids
+        if(name.length() != 0)
+            appids[10] = {searchNames(IO::folder + IO::DBName + IO::patExt, name), true}; // name Ids
 
         std::vector<int> Ids;
         bool noSearch = true;
