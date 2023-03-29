@@ -120,11 +120,14 @@ class windows:
     def showGames(self, gamesFound, fields: list[str]):
         """Mostra os jogos encontrados na janela de resultados"""
         # ------ Table Definition ------
-        gamesFound.sort(key=lambda x: x[0])
+        order: bool = False
+        last_col: int = 0
+        gamesFound.sort(key=lambda x: x[0], reverse=order)
         layout = [[sg.Table(values=gamesFound, headings=fields, max_col_width=20,
                             auto_size_columns=True,
                             # cols_justification=('left','center','right','c', 'l', 'bad'),       # Added on GitHub only as of June 2022
                             display_row_numbers=False,
+                            right_click_selects=True,
                             justification='center',
                             num_rows=20,
                             alternating_row_color='lightblue',
@@ -153,6 +156,15 @@ class windows:
                 for i in values['-TABLE-']:
                     print(i)
                 gamesFound.sort(key=lambda x: x[1])
+            if isinstance(event, tuple):
+                if event[0] == '-TABLE-':
+                    if event[2][0] == -1 and event[2][1] != -1:
+                        col_clicked = event[2][1]
+                        order = not order if col_clicked == last_col else False
+                        last_col = col_clicked
+                        gamesFound.sort(key=lambda x: x[col_clicked], reverse=order)
+                        window['-TABLE-'].update(values=gamesFound)
+
 
         window.close()
 
