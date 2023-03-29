@@ -152,10 +152,6 @@ class windows:
             event, values = window.read()
             if event == sg.WIN_CLOSED:
                 break
-            if event == '-TABLE-':
-                for i in values['-TABLE-']:
-                    print(i)
-                gamesFound.sort(key=lambda x: x[1])
             if isinstance(event, tuple):
                 if event[0] == '-TABLE-':
                     if event[2][0] == -1 and event[2][1] != -1:
