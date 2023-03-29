@@ -6,6 +6,7 @@ class windows:
     def __init__(self, Colum_size: int = 18, Line_size: int = 10) -> None:
         self.block_column_size = Colum_size  # Tamanho das colunas
         self.block_line_size = Line_size  # Tamanho das linhas
+        sg.change_look_and_feel('DarkGray13')
 
     def search(self, fields: dict):
         self.max_price = fields["price"]
@@ -130,7 +131,7 @@ class windows:
                             right_click_selects=True,
                             justification='center',
                             num_rows=20,
-                            alternating_row_color='lightblue',
+                            alternating_row_color='black',
                             key='-TABLE-',
                             selected_row_colors='red on yellow',
                             enable_events=True,
