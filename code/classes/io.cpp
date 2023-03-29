@@ -243,9 +243,9 @@ namespace IO
         return (fs::exists(DBPath) && fs::exists(DBPath + dateExt) &&
                 fs::exists(DBPath + devExt) && fs::exists(DBPath + genreExt) &&
                 fs::exists(DBPath + appidExt) && fs::exists(DBPath + langExt) &&
-                fs::exists(DBPath + patExt) && fs::exists(DBPath + priceExt) &&
-                fs::exists(DBPath + pubExt) && fs::exists(DBPath + reviewExt) &&
-                fs::exists(DBPath + tagExt));
+                fs::exists(DBPath + patExt) && fs::exists(DBPath + patExt + ".str") &&
+                fs::exists(DBPath + priceExt) && fs::exists(DBPath + pubExt) && 
+                fs::exists(DBPath + reviewExt) && fs::exists(DBPath + tagExt));
     }
 
     std::vector<std::string> getKeys(std::ifstream &file)
