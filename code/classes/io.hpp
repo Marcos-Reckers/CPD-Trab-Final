@@ -40,4 +40,5 @@ namespace IO
     std::vector<int> searchFile(std::ifstream &file, const std::string &key);
     std::vector<int> searchFilePrice(std::ifstream &file, int minPrice, int maxPrice);
     std::vector<int> searchFileDec(std::ifstream &file, int Decade);
+    std::vector<int> searchNames(std::ifstream &file, std::ifstream &strings, const std::string &key);
 }

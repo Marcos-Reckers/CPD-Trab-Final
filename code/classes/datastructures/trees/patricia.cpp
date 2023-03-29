@@ -105,6 +105,10 @@ namespace Trees
             }
             return nullptr; // Return null because the node was not found
         }
+        else if (this->key.starts_with(Key))
+        {
+            return this;
+        }
 
         return nullptr; // Return null because the node was not found
     }
@@ -133,11 +137,11 @@ namespace Trees
         return childrenData;
     }
 
-    int Patricia::writeToFile(std::ofstream &file)
-    {
-        file << *this;
-        return 0;
-    }
+    // int Patricia::writeToFileSTR(std::ofstream &file)
+    // {
+    //     file << *this;
+    //     return 0;
+    // }
 
     void Patricia::clear()
     {
@@ -234,7 +238,7 @@ namespace Trees
         {
             if (key.starts_with(child->key))
             {
-                auto node = child->Search(key); // Search for the node
+                auto node = child->Search(Key); // Search for the node
                 if (node != nullptr)            // If the node was found
                 {
                     return node; // Return the data of the node
@@ -271,82 +275,68 @@ namespace Trees
         return true;                           // Return true because the operation succeeded
     }
 
-    // int Patricia::Node::writeSizeToFile(std::ofstream &file)
-    // {
-    //     int size = 0;
-    //     file.write((char *)this->children.size(), sizeof(this->children.size()));
-    //     size += sizeof(this->children.size());
+    int Patricia::Node::updateSize()
+    {
+        int Size = 1;
+        for (auto child : this->children)
+        {
+            Size += child->updateSize();
+        }
+        return Size;
+    }
 
-    //     for(auto child : this->children)
-    //     {
-    //         size += child->writeSizeToFile(file);
-    //     }
+    int Patricia::updateSize()
+    {
+        int Size = 0;
+        for (auto child : this->root)
+        {
+            Size += child->updateSize();
+        }
+        return Size;
+    }
 
-    //     return size;
-    // }
+    int Patricia::Node::writeToFile(std::ofstream &file, std::ofstream &strings, const std::string &prefix)
+    {
+        std::string newKey = prefix + this->key;
+        file.write((char *)&this->data, sizeof(int));
 
-    // int Patricia::Node::writeToFile(std::ofstream &file)
-    // {
+        strings << newKey << std::endl;
 
-    //     int size = 0;
-    
-    //     file.write((char *)&this->key, sizeof(this->key));
-    //     file.write((char *)&this->data, sizeof(this->data));
-    //     size += sizeof(this->key) + sizeof(this->data);
+        for (auto child : this->children)
+        {
+            child->writeToFile(file, strings, newKey);
+        }
 
-    //     for (auto child : this->children)
-    //     {
-    //         size += child->writeToFile(file);
-    //     }
-    //     return size;
-    // }
+        return 0;
+    }
 
-    // int Patricia::writeToFile(std::ofstream &file)
-    // {
-    //     int size = 0;
-    //     file.write((char*)this->size, sizeof(this->size));
-    //     size += sizeof(this->size);
-    //     file.write((char*)this->root.size(), sizeof(this->root.size()));
-    //     size += sizeof(this->root.size());
+    int Patricia::writeToFile(std::ofstream &file, std::ofstream &strings)
+    {
+        int Size = this->updateSize();
+        file.write((char *)&Size, sizeof(int));
 
-    //     for (auto child : this->root)
-    //     {
-    //         size += child->writeSizeToFile(file);
-    //     }
+        for (auto child : this->root)
+        {
+            child->writeToFile(file, strings, "");
+        }
 
-    //     for (auto child : this->root)
-    //     {
-    //         size += child->writeToFile(file);
-    //     }
+        return 0;
+    }
 
-    //     return size;
-    // }
+    int Patricia::readFromFile(std::ifstream &file, std::ifstream &strings)
+    {
+        std::string key;
+        int data, Size;
 
-    // int Patricia::Node::readFromFile(std::ifstream &file)
-    // {
-    //     int size = 0;
-    //     std::string key;
-    //     int data;
-    //     while (file.read((char *)&key, sizeof(key)))
-    //     {
-    //         file.read((char *)&data, sizeof(data));
-    //         this->Insert(key, data);
-    //         size += sizeof(key) + sizeof(data);
-    //     }
-    //     return size;
-    // }
+        file.read((char *)&Size, sizeof(int));
 
-    // int Patricia::readFromFile(std::ifstream &file)
-    // {
-    //     int size = 0;
-    //     std::string key;
-    //     int data;
-    //     while (file.read((char *)&key, sizeof(key)))
-    //     {
-    //         file.read((char *)&data, sizeof(data));
-    //         this->Insert(key, data);
-    //         size += sizeof(key) + sizeof(data);
-    //     }
-    //     return size;
-    // }
+        for(int i = 0; i < Size; i++)
+        {
+            file.read((char *)&data, sizeof(int));
+            std::getline(strings, key);
+            this->Insert(key, data);
+        }
+        
+        return 0;
+    }
 }
