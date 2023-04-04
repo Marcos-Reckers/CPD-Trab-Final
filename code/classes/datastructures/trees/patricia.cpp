@@ -238,7 +238,7 @@ namespace Trees
         {
             if (key.starts_with(child->key))
             {
-                auto node = child->Search(Key); // Search for the node
+                auto node = child->Search(key); // Search for the node
                 if (node != nullptr)            // If the node was found
                 {
                     return node; // Return the data of the node
@@ -271,6 +271,8 @@ namespace Trees
     bool Patricia::Delete(const std::string &Key)
     {
         auto toDelete = this->SearchNode(Key); // Search for the node to delete
+        if (toDelete == nullptr)               // If the node was not found
+            return false;                      // Return false because the operation failed
         toDelete->data = -1;                   // Set the data of the node to delete to -1
         return true;                           // Return true because the operation succeeded
     }

@@ -28,7 +28,7 @@ namespace DB
         GamePrice getPrice() const { return price; };
         int getPriceInt() const { return price.getPrice(); };
         Reviews getReviews() const { return reviews; };
-        int writeToFile(std::ofstream &file) const;
+        int writeToFile(std::fstream &file) const;
         bool readFromFile(std::ifstream &file, int Index);
         friend std::ostream &operator<<(std::ostream &os, const Game &game)
         {
