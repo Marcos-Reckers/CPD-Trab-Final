@@ -112,7 +112,7 @@ namespace IO
         std::ofstream gamesFile(folder + DBName, std::ios::binary | std::ios::app); // open the file at the end. (append)
         if (!gamesFile.good())
             return {{"-1"}};
-        auto gamesSize = (std::filesystem::file_size(folder + DBName) / 1300) + 1; // Get the size of the file.
+        auto gamesSize = (std::filesystem::file_size(folder + DBName) / 1300) - 1; // Get the size of the file.
 
         //! Imports the data from the file
         std::ifstream myfile(path); // File to be read.
