@@ -37,41 +37,270 @@ namespace IO
         return games;
     }
 
-    int appendGame(const std::string &path, DB::Game &game)
+    template<typename T>
+    bool openAndImport(Tables::Hash<T> &Hash, const std::string &Extension)
     {
-        std::ofstream file(path, std::ios::binary | std::ios::app); // File to be written to.
-
-        if (!file.is_open())
-        {
-            std::cout << "Error opening file" << std::endl;
-            return 0;
-        }
-
+        std::ifstream file;
+        file.open(folder + DBName + Extension, std::ios::binary);
         if (!file.good())
-        {
-            std::cout << "Error writing to file" << std::endl;
             return 0;
-        }
-
-        auto size = game.writeToFile(file); // Write the game to the file.
-
+        Hash.readFromFile(file);
         file.close();
+        return 1;
+    }
 
-        std::ifstream file2(path, std::ifstream::ate | std::ifstream::binary);
-
-        if (!file2.is_open())
-        {
-            std::cout << "Error opening file" << std::endl;
+    template<typename T>
+    bool openAndExport(Tables::Hash<T> &Hash, const std::string &Extension)
+    {
+        std::ofstream file;
+        file.open(folder + DBName + Extension, std::ios::binary);
+        if (!file.good())
             return 0;
+        Hash.writeToFile(file);
+        file.close();
+        return 1;
+    }
+
+    std::vector<std::vector<std::string>> appendGame(const std::string &path)
+    {
+        //! Imports the Data
+        std::ifstream file(folder + DBName + patExt, std::ios::binary);
+        std::ifstream file2(folder + DBName + patExt + ".str", std::ios::binary);
+        Trees::Patricia patricia; // Patricia tree std::ifstream file;
+        if (!file.good() || !file2.good())
+            return {{"-1"}};
+        patricia.readFromFile(file, file2);
+        file.close();
+        file2.close();
+
+        Tables::Hash<std::string> languages; // Hash table of languages.
+        if (!openAndImport(languages, langExt))
+            return {{"-1"}};
+
+        Tables::Hash<std::string> genres; // Hash table of genres.
+        if (!openAndImport(genres, genreExt))
+            return {{"-1"}};
+
+        Tables::Hash<std::string> developers; // Hash table of developers.
+        if (!openAndImport(developers, devExt))
+            return {{"-1"}};
+
+        Tables::Hash<std::string> publishers; // Hash table of publishers.
+        if (!openAndImport(publishers, pubExt))
+            return {{"-1"}};
+
+        Tables::Hash<std::string> popularTags; // Hash table of popular tags.
+        if (!openAndImport(popularTags, tagExt))
+            return {{"-1"}};
+
+        Tables::Hash<std::string> releaseDates; // Hash table of release dates.
+        if (!openAndImport(releaseDates, dateExt))
+            return {{"-1"}};
+
+        Tables::Hash<std::string> prices; // Hash table of prices.
+        if (!openAndImport(prices, priceExt))
+            return {{"-1"}};
+
+        Tables::Hash<std::string> reviews; // Hash table of reviews.
+        if (!openAndImport(reviews, reviewExt))
+            return {{"-1"}};
+
+        Tables::Hash<int> appids; // Hash table of appids.
+        if (!openAndImport(appids, appidExt))
+            return {{"-1"}};
+
+        std::ofstream gamesFile(folder + DBName, std::ios::binary | std::ios::app); // open the file at the end. (append)
+        if (!gamesFile.good())
+            return {{"-1"}};
+        auto gamesSize = (std::filesystem::file_size(folder + DBName) / 1300) + 1; // Get the size of the file.
+
+        //! Imports the data from the file
+        std::ifstream myfile(path); // File to be read.
+        if (!myfile.good())
+            return {{"-1"}};
+
+        std::string line;           // Line to be read.
+        std::getline(myfile, line); // Skip the first line.
+        std::getline(myfile, line); // Skip the second line.
+
+        while (!myfile.eof()) // While we haven't reached the end of the file.
+        {
+            std::getline(myfile, line);                 // Read the next line.
+            auto strings = STR::customSplit(line, ';'); // Split the line into a vector of strings.
+
+            // Add the tags to the game.
+            const std::string tags = strings[popularTagsIndex] + ", " + strings[gameDetailsIndex] + ", " + strings[languagesIndex] + ", " + strings[genreIndex];
+
+            DB::Game game(strings[urlIndex], strings[nameIndex], strings[developerIndex],
+                          strings[publisherIndex], strings[releaseDateIndex], tags,
+                          strings[priceIndex], strings[reviewIndex]);
+
+            patricia.Insert(game.getName(), game.getAppid());
+            popularTags.Insert(STR::customSplit(strings[popularTagsIndex], ','), game.getAppid());
+            languages.Insert(STR::customSplit(strings[languagesIndex], ','), game.getAppid());
+            genres.Insert(STR::customSplit(strings[genreIndex], ','), game.getAppid());
+            developers.Insert(STR::customSplit(strings[developerIndex], ','), game.getAppid());
+            publishers.Insert(STR::customSplit(strings[publisherIndex], ','), game.getAppid());
+            releaseDates.Insert(game.getReleaseDate().getYearStr(), game.getAppid());
+            prices.Insert(std::to_string(game.getPriceInt()), game.getAppid());
+            reviews.Insert(DB::ReviewsToStr(game.getReviews()), game.getAppid());
+
+            game.writeToFile(gamesFile);
+
+            gamesSize++;
+            appids.Insert(game.getAppid(), gamesSize);
         }
 
-        if (!file2.good())
-        {
-            std::cout << "Error writing to file" << std::endl;
-            return 0;
-        }
+        myfile.close();
+        gamesFile.close();
 
-        return int(file2.tellg()) / size;
+        std::ofstream outFile(folder + DBName + patExt, std::ios::binary);
+        std::ofstream outFile2(folder + DBName + patExt + ".str", std::ios::binary);
+        if (!outFile.good() || !outFile2.good())
+            return {{"-1"}};
+        patricia.writeToFile(outFile, outFile2);
+        outFile.close();
+        outFile2.close();
+
+        if (!openAndExport(languages, langExt))
+            return {{"-1"}};
+
+        if (!openAndExport(genres, genreExt))
+            return {{"-1"}};
+
+        if (!openAndExport(developers, devExt))
+            return {{"-1"}};
+
+        if (!openAndExport(publishers, pubExt))
+            return {{"-1"}};
+
+        if (!openAndExport(popularTags, tagExt))
+            return {{"-1"}};
+
+        if (!openAndExport(releaseDates, dateExt))
+            return {{"-1"}};
+
+        if (!openAndExport(prices, priceExt))
+            return {{"-1"}};
+
+        if (!openAndExport(reviews, reviewExt))
+            return {{"-1"}};
+
+        if (!openAndExport(appids, appidExt))
+            return {{"-1"}};
+
+        return {languages.GetKeys(), genres.GetKeys(), developers.GetKeys(), publishers.GetKeys(), popularTags.GetKeys(), releaseDates.GetKeys(), prices.GetKeys()};
+    }
+
+    std::vector<std::vector<std::string>> appendGame(const DB::Game &Game,
+                                                     const std::string &Developer,
+                                                     const std::string &Publisher,
+                                                     const std::string &PopularTags,
+                                                     const std::string &GameDetails,
+                                                     const std::string &Languages,
+                                                     const std::string &Genres)
+    {
+        //! Imports the Data
+        std::ifstream file(folder + DBName + patExt, std::ios::binary);
+        std::ifstream file2(folder + DBName + patExt + ".str", std::ios::binary);
+        Trees::Patricia patricia; // Patricia tree std::ifstream file;
+        if (!file.good() || !file2.good())
+            return {{"-1"}};
+        patricia.readFromFile(file, file2);
+        file.close();
+        file2.close();
+
+        Tables::Hash<std::string> languages;    // Hash table of languages.
+        if(!openAndImport(languages, langExt))
+            return {{"-1"}};
+
+        Tables::Hash<std::string> genres;       // Hash table of genres.
+        if(!openAndImport(genres, genreExt))
+            return {{"-1"}};
+
+        Tables::Hash<std::string> developers;   // Hash table of developers.
+        if(!openAndImport(developers, devExt))
+            return {{"-1"}};
+
+        Tables::Hash<std::string> publishers;   // Hash table of publishers.
+        if(!openAndImport(publishers, pubExt))
+            return {{"-1"}};
+
+        Tables::Hash<std::string> popularTags;  // Hash table of popular tags.
+        if(!openAndImport(popularTags, tagExt))
+            return {{"-1"}};
+
+        Tables::Hash<std::string> releaseDates; // Hash table of release dates.
+        if(!openAndImport(releaseDates, dateExt))
+            return {{"-1"}};
+
+        Tables::Hash<std::string> prices;       // Hash table of prices.
+        if(!openAndImport(prices, priceExt))
+            return {{"-1"}};
+
+        Tables::Hash<std::string> reviews;      // Hash table of reviews.
+        if(!openAndImport(reviews, reviewExt))
+            return {{"-1"}};
+
+        Tables::Hash<int> appids;               // Hash table of appids.
+        if(!openAndImport(appids, appidExt))
+            return {{"-1"}};
+
+        patricia.Insert(Game.getName(), Game.getAppid());
+        popularTags.Insert(STR::customSplit(PopularTags, ','), Game.getAppid());
+        languages.Insert(STR::customSplit(Languages, ','), Game.getAppid());
+        genres.Insert(STR::customSplit(Genres, ','), Game.getAppid());
+        developers.Insert(STR::customSplit(Developer, ','), Game.getAppid());
+        publishers.Insert(STR::customSplit(Publisher, ','), Game.getAppid());
+        releaseDates.Insert(Game.getReleaseDate().getYearStr(), Game.getAppid());
+        prices.Insert(std::to_string(Game.getPriceInt()), Game.getAppid());
+        reviews.Insert(DB::ReviewsToStr(Game.getReviews()), Game.getAppid());
+
+        std::ofstream gamesFile(folder + DBName, std::ios::binary | std::ios::ate); // open the file at the end. (append)
+        if (!gamesFile.good())
+            return {{"-1"}};
+        int index = gamesFile.tellp() / 1300;
+        Game.writeToFile(gamesFile);
+        gamesFile.close();
+
+        appids.Insert(Game.getAppid(), index);
+
+        std::ofstream outFile(folder + DBName + patExt, std::ios::binary);
+        std::ofstream outFile2(folder + DBName + patExt + ".str", std::ios::binary);
+        if (!outFile.good() || !outFile2.good())
+            return {{"-1"}};
+        patricia.writeToFile(outFile, outFile2);
+        outFile.close();
+        outFile2.close();
+
+        if(!openAndExport(languages, langExt))
+            return {{"-1"}};
+
+        if(!openAndExport(genres, genreExt))
+            return {{"-1"}};
+
+        if(!openAndExport(developers, devExt))
+            return {{"-1"}};
+
+        if(!openAndExport(publishers, pubExt))
+            return {{"-1"}};
+
+        if(!openAndExport(popularTags, tagExt))
+            return {{"-1"}};
+
+        if(!openAndExport(releaseDates, dateExt))
+            return {{"-1"}};
+
+        if(!openAndExport(prices, priceExt))
+            return {{"-1"}};
+
+        if(!openAndExport(reviews, reviewExt))
+            return {{"-1"}};
+
+        if(!openAndExport(appids, appidExt))
+            return {{"-1"}};
+
+        return {languages.GetKeys(), genres.GetKeys(), developers.GetKeys(), publishers.GetKeys(), popularTags.GetKeys(), releaseDates.GetKeys(), prices.GetKeys()};
     }
 
     std::vector<DB::Game> loadGames(const std::string &path)

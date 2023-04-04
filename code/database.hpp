@@ -3,7 +3,18 @@
 
 namespace database
 {
-    // int Append(const std::vector<std::string> &args);
+    std::vector<std::vector<std::string>> append(const std::string &path,
+                                                 int appID,
+                                                 const std::string &name,
+                                                 const std::string &developer,
+                                                 const std::string &publisher,
+                                                 const std::string &releaseDate,
+                                                 const std::string &popularTags,
+                                                 const std::string &gameDetails,
+                                                 const std::string &languages,
+                                                 const std::string &genre,
+                                                 const std::string &price,
+                                                 const std::string &review);
 
     std::string convert(const std::string &path, int size);
 
