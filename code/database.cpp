@@ -47,26 +47,56 @@ namespace database
         return ss.str();
     }
 
-    std::vector<int> searchFile(const std::string &path, const std::vector<std::string> &keys)
+    std::vector<int> intersection(const std::vector<int> &a, const std::vector<int> &b, bool type)
+    {
+        std::unordered_set<int> temp;
+        for (auto i : a)
+        {
+            for (auto j : b)
+            {
+                if (i == j)
+                {
+                    temp.insert(i);
+                }
+                else if (type)
+                {
+                    temp.insert(i);
+                    temp.insert(j);
+                }
+            }
+        }
+
+        return std::vector<int>(temp.begin(), temp.end());
+    }
+
+    std::vector<int> searchFile(const std::string &path, const std::vector<std::string> &keys, bool searchType)
     {
         std::vector<int> ids;
         std::ifstream file;
         file.open(path, std::ios::binary);
-
         if (!file.good())
             return ids;
 
+        std::vector<std::vector<int>> appids(keys.size());
+        int ind = 0;
         for (auto key : keys)
         {
             auto id = IO::searchFile(file, key);
             for (auto i : id)
             {
-                ids.push_back(i);
+                appids[ind].push_back(i);
             }
             file.seekg(0);
+            ind++;
         }
 
         file.close();
+
+        ids = appids[0];
+        for (auto &i : appids)
+        {
+            ids = intersection(ids, i, searchType);
+        }
 
         return ids;
     }
@@ -158,28 +188,6 @@ namespace database
         return ids;
     }
 
-    std::vector<int> intersection(const std::vector<int> &a, const std::vector<int> &b, bool type)
-    {
-        std::unordered_set<int> temp;
-        for (auto i : a)
-        {
-            for (auto j : b)
-            {
-                if (i == j)
-                {
-                    temp.insert(i);
-                }
-                else if (type)
-                {
-                    temp.insert(i);
-                    temp.insert(j);
-                }
-            }
-        }
-
-        return std::vector<int>(temp.begin(), temp.end());
-    }
-
     std::vector<std::vector<std::string>> search(const std::vector<std::string> &genres,
                                                  const std::vector<std::string> &languages,
                                                  const std::vector<std::string> &tags,
@@ -206,22 +214,22 @@ namespace database
             i.second = false;
 
         if (genres.size() != 0)
-            appids[0] = {searchFile(IO::folder + IO::DBName + IO::genreExt, genres), true}; // genres Ids
+            appids[0] = {searchFile(IO::folder + IO::DBName + IO::genreExt, genres, searchType), true}; // genres Ids
 
         if (languages.size() != 0)
-            appids[1] = {searchFile(IO::folder + IO::DBName + IO::langExt, languages), true}; // languages Ids
+            appids[1] = {searchFile(IO::folder + IO::DBName + IO::langExt, languages, searchType), true}; // languages Ids
 
         if (tags.size() != 0)
-            appids[2] = {searchFile(IO::folder + IO::DBName + IO::tagExt, tags), true}; // tags Ids
+            appids[2] = {searchFile(IO::folder + IO::DBName + IO::tagExt, tags, searchType), true}; // tags Ids
 
         if (dates.size() != 0)
-            appids[3] = {searchFile(IO::folder + IO::DBName + IO::dateExt, dates), true}; // dates Ids
+            appids[3] = {searchFile(IO::folder + IO::DBName + IO::dateExt, dates, searchType), true}; // dates Ids
 
         if (developers.size() != 0)
-            appids[4] = {searchFile(IO::folder + IO::DBName + IO::devExt, developers), true}; // developers Ids
+            appids[4] = {searchFile(IO::folder + IO::DBName + IO::devExt, developers, searchType), true}; // developers Ids
 
         if (publishers.size() != 0)
-            appids[5] = {searchFile(IO::folder + IO::DBName + IO::pubExt, publishers), true}; // publishers Ids
+            appids[5] = {searchFile(IO::folder + IO::DBName + IO::pubExt, publishers, searchType), true}; // publishers Ids
 
         if (minPrice != -1 || maxPrice != -1)
             appids[6] = {searchFilePrice(IO::folder + IO::DBName + IO::priceExt, minPrice, maxPrice), true}; // price Ids
@@ -230,7 +238,7 @@ namespace database
             appids[7] = {searchFileDec(IO::folder + IO::DBName + IO::dateExt, decade), true}; // decade Ids
 
         if (reviews.size() != 0)
-            appids[8] = {searchFile(IO::folder + IO::DBName + IO::reviewExt, reviews), true}; // reviews Ids
+            appids[8] = {searchFile(IO::folder + IO::DBName + IO::reviewExt, reviews, searchType), true}; // reviews Ids
 
         if (name.length() != 0)
             appids[10] = {searchNames(IO::folder + IO::DBName + IO::patExt, name), true}; // name Ids

@@ -1,4 +1,4 @@
-#include "database.hpp"
+// #include "database.hpp"
 
 // void test()
 // {
@@ -27,8 +27,8 @@
 //     file2 << patricia << std::endl;
 // }
 
-int main()
-{
+// int main()
+// {
     // std::cout << database::convert("C:/Users/kersz/Documents/ufrgs/Semestre_3/CPDFinal/code/DB_Steam.csv", -1) << std::endl;
 
     // database::append("C:/Users/kersz/Documents/ufrgs/Semestre_3/CPDFinal/code/NewGames.csv", 0, "", "", "", "", "", "", "", "", "", "");
@@ -36,19 +36,7 @@ int main()
 
     // database::append("C:/Users/kersz/Documents/ufrgs/Semestre_3/CPDFinal/code/NewGames.csv", 0, "", "", "", "", "", "", "", "", "", "");
 
-    // Trees::Patricia patricia;
-
-    // std::ifstream file("data/Steam.db.pat");
-    // std::ifstream strings("data/Steam.db.pat.str");
-    // patricia.readFromFile(file, strings);
-
-    // for(auto item : patricia.SearchPrefix("IANSSTESTGAME"))
-    // {
-    //     std::cout << item << std::endl;
-    // }
-
-
-    // auto ret = database::search({}, {}, {}, {}, {}, {}, {}, "IANSSTESTGAME", -1, -1, -1, -1, false);
+    // auto ret = database::search({}, {}, {}, {}, {}, {}, {"Overwhelmingly Positive"}, "", -1, -1, -1, -1, false);
     // for(auto item : ret)
     // {
     //     for(auto item2 : item)
@@ -59,4 +47,4 @@ int main()
     // }
 
     // return 0;
-}
+// }
