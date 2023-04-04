@@ -314,17 +314,17 @@ class windows:
         self.unchecked = images.UNCHECKED
         return [[sg.Text('STEAM BUG'),],
                 [
-                sg.Text('GENERO', justification="center",
+                sg.Text('Generos', justification="center",
                         size=self.block_column_size-3, expand_x=True),
-                sg.Text('IDIOMA', justification="center",
+                sg.Text('Idiomas', justification="center",
                         size=self.block_column_size-3, expand_x=True),
-                sg.Text('TAGS', justification="center",
+                sg.Text('Tags', justification="center",
                         size=self.block_column_size-3, expand_x=True),
-                sg.Text('DATA', justification="center",
+                sg.Text('Ano', justification="center",
                         size=self.block_column_size-3, expand_x=True),
-                sg.Text('DEV', justification="center",
+                sg.Text('Desenvolvedor', justification="center",
                         size=self.block_column_size-3, expand_x=True),
-                sg.Text('PUBLISHER', justification="center",
+                sg.Text('Editora', justification="center",
                         size=self.block_column_size-3, expand_x=True)
                 ],
                 [
@@ -342,8 +342,8 @@ class windows:
                     self.block_column_size - 3, self.block_line_size), key='-PUBLISHER-', expand_x=True, expand_y=True)
                 ],
                 [
-                sg.Push(), sg.Text('Preço MIN:', justification="center", expand_x=True), sg.Push(), sg.Text(
-                    'Preço MAX:', justification="center", expand_x=True), sg.Push()
+                sg.Push(), sg.Text('Preço Minimo', justification="center", expand_x=True), sg.Push(), sg.Text(
+                    'Preço Maximo', justification="center", expand_x=True), sg.Push()
                 ],
                 [
                 sg.Push(), sg.Slider(orientation="h", range=(0, self.max_price), resolution=0.01, key='-PRICE_MIN-', expand_x=True), sg.Slider(
