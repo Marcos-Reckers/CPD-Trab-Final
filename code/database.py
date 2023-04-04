@@ -1,6 +1,10 @@
 import DB as database
 
 
+def Append(Path: str, AppID: int, Name: str, Developer: str, Publisher: str, ReleaseDate: str, PopularTags: str, GameDetails: str, Languages: str, Genre: str, Price: str, Review: str) -> list[list[str]]:
+    return database.Append(Path, AppID, Name, Developer, Publisher, ReleaseDate, PopularTags, GameDetails, Languages, Genre, Price, Review)
+
+
 def Convert(DB_Path: str, Size: int) -> str:
     return database.Convert(DB_Path, Size)
 

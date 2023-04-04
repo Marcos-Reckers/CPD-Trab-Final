@@ -2,25 +2,34 @@
 
 namespace database
 {
-    // int Append(const std::vector<std::string> &args)
-    // {
-    //     if (args.size() < 3)
-    //     {
-    //         return HelpMessage();
-    //     }
+    std::vector<std::vector<std::string>> append(const std::string &path,
+                                                 int appID,
+                                                 const std::string &name,
+                                                 const std::string &developer,
+                                                 const std::string &publisher,
+                                                 const std::string &releaseDate,
+                                                 const std::string &popularTags,
+                                                 const std::string &gameDetails,
+                                                 const std::string &languages,
+                                                 const std::string &genre,
+                                                 const std::string &price,
+                                                 const std::string &review)
+    {
+        // If path is not empty, then we are importing a database.
+        if (path != "")
+        {
+            return IO::appendGame(path);
+        }
 
-    //     auto game = DB::Game();
-    //     auto index = IO::appendGame(IO::folder + IO::DBName, game);
-    //     if (index == 0)
-    //     {
-    //         std::cout << "Couldn't append game" << std::endl;
+        const std::string tags = popularTags + ", " + gameDetails + ", " + languages + ", " + genre;
 
-    //         return 1;
-    //     }
+        std::stringstream ss;
+        ss << appID << "/";
 
-    //     std::cout << "Game Index: " << index << std::endl;
-    //     return 0;
-    // }
+        auto game = DB::Game(ss.str(), name, developer, publisher, releaseDate, tags, price, review);
+
+        return IO::appendGame(game, developer, publisher, tags, gameDetails, languages, genre);
+    }
 
     std::string convert(const std::string &path, int size)
     {
@@ -29,7 +38,7 @@ namespace database
         auto outCode = IO::ConvertDatabase(path, i);
         auto end = std::chrono::high_resolution_clock::now(); // Stop the timer.
         std::stringstream ss;
-        if(outCode == 0)
+        if (outCode == 0)
             ss << "Converted database in ";
         else
             ss << "Failed to convert database in ";
@@ -223,7 +232,7 @@ namespace database
         if (reviews.size() != 0)
             appids[8] = {searchFile(IO::folder + IO::DBName + IO::reviewExt, reviews), true}; // reviews Ids
 
-        if(name.length() != 0)
+        if (name.length() != 0)
             appids[10] = {searchNames(IO::folder + IO::DBName + IO::patExt, name), true}; // name Ids
 
         std::vector<int> Ids;

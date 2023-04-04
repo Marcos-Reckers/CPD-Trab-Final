@@ -1,4 +1,4 @@
-// #include "database.hpp"
+#include "database.hpp"
 
 // void test()
 // {
@@ -27,24 +27,21 @@
 //     file2 << patricia << std::endl;
 // }
 
-// int main()
-// {
-//     // std::cout << database::convert("../DB_Steam.csv", -1) << std::endl;
-//     // auto begin = std::chrono::high_resolution_clock::now();
-//     test();
-//     // auto end = std::chrono::high_resolution_clock::now();
-//     // std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms" << std::endl;
+int main()
+{
+    std::cout << database::convert("C:/Users/kersz/Documents/ufrgs/Semestre_3/CPDFinal/code/DB_Steam.csv", -1) << std::endl;
 
-//     auto games = database::search({}, {}, {}, {}, {}, {}, {}, "0", -1, -1, -1, -1, 0);
+    database::append("C:/Users/kersz/Documents/ufrgs/Semestre_3/CPDFinal/code/NewGames.csv", 0, "", "", "", "", "", "", "", "", "", "");
 
-//     for (auto game : games)
-//     {
-//         for (auto item : game)
-//         {
-//             std::cout << item << " ";
-//         }
-//         std::cout << std::endl;
-//     }
+    auto ret = database::search({""}, {""}, {""}, {""}, {""}, {""}, {""}, "00", -1, -1, -1, -1, false);
+    for(auto item : ret)
+    {
+        for(auto item2 : item)
+        {
+            std::cout << item2 << " ";
+        }
+        std::cout << std::endl;
+    }
 
-//     return 0;
-// }
+    return 0;
+}

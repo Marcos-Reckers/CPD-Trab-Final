@@ -31,7 +31,14 @@ namespace IO
     const int genreIndex = 9;       // Index of the genre in the csv file.
     const int priceIndex = 10;      // Index of the price in the csv file.
 
-    int appendGame(const std::string &path, DB::Game &game);
+    std::vector<std::vector<std::string>> appendGame(const std::string &path);
+    std::vector<std::vector<std::string>> appendGame(const DB::Game &game,
+                                                     const std::string &developer,
+                                                     const std::string &publisher,
+                                                     const std::string &popularTags,
+                                                     const std::string &gameDetails,
+                                                     const std::string &languages,
+                                                     const std::string &genre);
     std::vector<DB::Game> loadGames(const std::string &path);
     int ConvertDatabase(const std::string &path, size_t limit);
     bool databaseExists();
