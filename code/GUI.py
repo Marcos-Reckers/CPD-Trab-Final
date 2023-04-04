@@ -100,8 +100,8 @@ class windows:
         while True:  # Event Loop
             event, values = window.read()
             elem: sg.Element = window.find_element_with_focus()
-            current_cell: int = TITULOS.index(
-                elem.key) if elem.key in TITULOS else current_cell
+            if(elem is not None):
+                current_cell: int = TITULOS.index(elem.key) if elem.key in TITULOS else current_cell
             c = current_cell
 
             if event in (sg.WIN_CLOSED, 'Exit'):     # If user closed the window
