@@ -135,10 +135,6 @@ class windows:
                                       release_date, popular_tags, game_details, languages, genre, price, review)
                 break
 
-            if elem.key == 'AppID' and len(values['AppID']) and values['AppID'][-1] not in ('0123456789'):
-                # delete last char from input
-                window['AppID'].update(values['AppID'][:-1])
-
         window.close()
 
     def translate_reviews(self, values: list[bool]):
@@ -188,7 +184,6 @@ class windows:
         output['decades']: int = - \
             1 if values['-DECADE-'] == '' else int(values['-DECADE-'])
         output['search']: bool = not values['-SEARCH_TYPE-']
-        print(output)
 
         gamesFound = database.Search(output['genres'], output['languages'], output['tags'], output['date'], output['developers'], output['publishers'],
                                      output['reviews'], output['name'], output['price_min'], output['price_max'], output['decades'], output['id'], output['search'])
@@ -248,8 +243,7 @@ class windows:
     def cleanFields(self, window: sg.Window, fields: dict):
         def cleanButtonEvent(window: sg.Window, key: str, default: bool, btn_on: bytes, btn_off: bytes):
             window[key].metadata = default
-            window[key].update(
-                image_data=btn_on if window[key].metadata else btn_off)
+            window[key].update(btn_on if window[key].metadata else btn_off)
 
         window['-ID-'].update('')
         window['-NAME-'].update('')
@@ -280,8 +274,8 @@ class windows:
                          self.checked, self.unchecked)
         cleanButtonEvent(window, '-REV_EX_NEG-', False,
                          self.checked, self.unchecked)
-        cleanButtonEvent(window, '-SEARCH_TYPE-', True,
-                         self.toggle_btn_on, self.toggle_btn_off)
+        window['-SEARCH_TYPE-'].metadata = True
+        window['-SEARCH_TYPE-'].update(image_data=self.toggle_btn_on if window['-SEARCH_TYPE-'].metadata else self.toggle_btn_off)
 
     def create_search(self, fields: dict) -> list:
         """Layout da janela principal"""

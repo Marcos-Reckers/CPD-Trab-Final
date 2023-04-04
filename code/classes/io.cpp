@@ -37,7 +37,7 @@ namespace IO
         return games;
     }
 
-    template<typename T>
+    template <typename T>
     bool openAndImport(Tables::Hash<T> &Hash, const std::string &Extension)
     {
         std::ifstream file;
@@ -49,7 +49,7 @@ namespace IO
         return 1;
     }
 
-    template<typename T>
+    template <typename T>
     bool openAndExport(Tables::Hash<T> &Hash, const std::string &Extension)
     {
         std::ofstream file;
@@ -109,10 +109,10 @@ namespace IO
         if (!openAndImport(appids, appidExt))
             return {{"-1"}};
 
-        std::ofstream gamesFile(folder + DBName, std::ios::binary | std::ios::app); // open the file at the end. (append)
+        std::fstream gamesFile(folder + DBName, std::ios::binary | std::ios::in | std::ios::out); // open the file at the end. (append)
         if (!gamesFile.good())
             return {{"-1"}};
-        auto gamesSize = (std::filesystem::file_size(folder + DBName) / 1300) - 1; // Get the size of the file.
+        auto gamesSize = std::filesystem::file_size(folder + DBName) / 1300; // Get the size of the file.
 
         //! Imports the data from the file
         std::ifstream myfile(path); // File to be read.
@@ -135,6 +135,24 @@ namespace IO
                           strings[publisherIndex], strings[releaseDateIndex], tags,
                           strings[priceIndex], strings[reviewIndex]);
 
+            auto pos = gamesSize;
+
+            auto place = appids.Search(game.getAppid());
+            if (!place.empty())
+            {
+                const auto &id = game.getAppid();
+                patricia.Delete(game.getName());
+                popularTags.DeleteGame(id);
+                languages.DeleteGame(id);
+                genres.DeleteGame(id);
+                developers.DeleteGame(id);
+                publishers.DeleteGame(id);
+                releaseDates.DeleteGame(id);
+                prices.DeleteGame(id);
+                reviews.DeleteGame(id);
+                pos = place[0];
+            }
+
             patricia.Insert(game.getName(), game.getAppid());
             popularTags.Insert(STR::customSplit(strings[popularTagsIndex], ','), game.getAppid());
             languages.Insert(STR::customSplit(strings[languagesIndex], ','), game.getAppid());
@@ -145,10 +163,12 @@ namespace IO
             prices.Insert(std::to_string(game.getPriceInt()), game.getAppid());
             reviews.Insert(DB::ReviewsToStr(game.getReviews()), game.getAppid());
 
+            gamesFile.seekp(pos * 1300);
             game.writeToFile(gamesFile);
 
-            gamesSize++;
-            appids.Insert(game.getAppid(), gamesSize);
+            appids.Insert(game.getAppid(), pos);
+            if (place.empty())
+                gamesSize++;
         }
 
         myfile.close();
@@ -210,41 +230,62 @@ namespace IO
         file.close();
         file2.close();
 
-        Tables::Hash<std::string> languages;    // Hash table of languages.
-        if(!openAndImport(languages, langExt))
+        Tables::Hash<std::string> languages; // Hash table of languages.
+        if (!openAndImport(languages, langExt))
             return {{"-1"}};
 
-        Tables::Hash<std::string> genres;       // Hash table of genres.
-        if(!openAndImport(genres, genreExt))
+        Tables::Hash<std::string> genres; // Hash table of genres.
+        if (!openAndImport(genres, genreExt))
             return {{"-1"}};
 
-        Tables::Hash<std::string> developers;   // Hash table of developers.
-        if(!openAndImport(developers, devExt))
+        Tables::Hash<std::string> developers; // Hash table of developers.
+        if (!openAndImport(developers, devExt))
             return {{"-1"}};
 
-        Tables::Hash<std::string> publishers;   // Hash table of publishers.
-        if(!openAndImport(publishers, pubExt))
+        Tables::Hash<std::string> publishers; // Hash table of publishers.
+        if (!openAndImport(publishers, pubExt))
             return {{"-1"}};
 
-        Tables::Hash<std::string> popularTags;  // Hash table of popular tags.
-        if(!openAndImport(popularTags, tagExt))
+        Tables::Hash<std::string> popularTags; // Hash table of popular tags.
+        if (!openAndImport(popularTags, tagExt))
             return {{"-1"}};
 
         Tables::Hash<std::string> releaseDates; // Hash table of release dates.
-        if(!openAndImport(releaseDates, dateExt))
+        if (!openAndImport(releaseDates, dateExt))
             return {{"-1"}};
 
-        Tables::Hash<std::string> prices;       // Hash table of prices.
-        if(!openAndImport(prices, priceExt))
+        Tables::Hash<std::string> prices; // Hash table of prices.
+        if (!openAndImport(prices, priceExt))
             return {{"-1"}};
 
-        Tables::Hash<std::string> reviews;      // Hash table of reviews.
-        if(!openAndImport(reviews, reviewExt))
+        Tables::Hash<std::string> reviews; // Hash table of reviews.
+        if (!openAndImport(reviews, reviewExt))
             return {{"-1"}};
 
-        Tables::Hash<int> appids;               // Hash table of appids.
-        if(!openAndImport(appids, appidExt))
+        Tables::Hash<int> appids; // Hash table of appids.
+        if (!openAndImport(appids, appidExt))
             return {{"-1"}};
+
+        std::fstream gamesFile(folder + DBName, std::ios::binary | std::ios::in | std::ios::out); // open the file at the end. (append)
+        if (!gamesFile.good())
+            return {{"-1"}};
+        auto pos = std::filesystem::file_size(folder + DBName) / 1300; // Get the size of the file.
+
+        auto place = appids.Search(Game.getAppid());
+        if (!place.empty())
+        {
+            const auto &id = Game.getAppid();
+            patricia.Delete(Game.getName());
+            popularTags.DeleteGame(id);
+            languages.DeleteGame(id);
+            genres.DeleteGame(id);
+            developers.DeleteGame(id);
+            publishers.DeleteGame(id);
+            releaseDates.DeleteGame(id);
+            prices.DeleteGame(id);
+            reviews.DeleteGame(id);
+            pos = place[0];
+        }
 
         patricia.Insert(Game.getName(), Game.getAppid());
         popularTags.Insert(STR::customSplit(PopularTags, ','), Game.getAppid());
@@ -256,14 +297,10 @@ namespace IO
         prices.Insert(std::to_string(Game.getPriceInt()), Game.getAppid());
         reviews.Insert(DB::ReviewsToStr(Game.getReviews()), Game.getAppid());
 
-        std::ofstream gamesFile(folder + DBName, std::ios::binary | std::ios::ate); // open the file at the end. (append)
-        if (!gamesFile.good())
-            return {{"-1"}};
-        int index = gamesFile.tellp() / 1300;
+        gamesFile.seekp(pos * 1300);
         Game.writeToFile(gamesFile);
+        appids.Insert(Game.getAppid(), pos);
         gamesFile.close();
-
-        appids.Insert(Game.getAppid(), index);
 
         std::ofstream outFile(folder + DBName + patExt, std::ios::binary);
         std::ofstream outFile2(folder + DBName + patExt + ".str", std::ios::binary);
@@ -273,31 +310,31 @@ namespace IO
         outFile.close();
         outFile2.close();
 
-        if(!openAndExport(languages, langExt))
+        if (!openAndExport(languages, langExt))
             return {{"-1"}};
 
-        if(!openAndExport(genres, genreExt))
+        if (!openAndExport(genres, genreExt))
             return {{"-1"}};
 
-        if(!openAndExport(developers, devExt))
+        if (!openAndExport(developers, devExt))
             return {{"-1"}};
 
-        if(!openAndExport(publishers, pubExt))
+        if (!openAndExport(publishers, pubExt))
             return {{"-1"}};
 
-        if(!openAndExport(popularTags, tagExt))
+        if (!openAndExport(popularTags, tagExt))
             return {{"-1"}};
 
-        if(!openAndExport(releaseDates, dateExt))
+        if (!openAndExport(releaseDates, dateExt))
             return {{"-1"}};
 
-        if(!openAndExport(prices, priceExt))
+        if (!openAndExport(prices, priceExt))
             return {{"-1"}};
 
-        if(!openAndExport(reviews, reviewExt))
+        if (!openAndExport(reviews, reviewExt))
             return {{"-1"}};
 
-        if(!openAndExport(appids, appidExt))
+        if (!openAndExport(appids, appidExt))
             return {{"-1"}};
 
         return {languages.GetKeys(), genres.GetKeys(), developers.GetKeys(), publishers.GetKeys(), popularTags.GetKeys(), releaseDates.GetKeys(), prices.GetKeys()};
@@ -386,7 +423,7 @@ namespace IO
         const auto &DBPath = folder + DBName;
 
         // outputs the games to the file
-        std::ofstream database(DBPath, std::ios::binary);
+        std::fstream database(DBPath, std::ios::binary | std::ios::out);
         if (!database.good())
             return -1;
         for (auto game : games)
@@ -473,7 +510,7 @@ namespace IO
                 fs::exists(DBPath + devExt) && fs::exists(DBPath + genreExt) &&
                 fs::exists(DBPath + appidExt) && fs::exists(DBPath + langExt) &&
                 fs::exists(DBPath + patExt) && fs::exists(DBPath + patExt + ".str") &&
-                fs::exists(DBPath + priceExt) && fs::exists(DBPath + pubExt) && 
+                fs::exists(DBPath + priceExt) && fs::exists(DBPath + pubExt) &&
                 fs::exists(DBPath + reviewExt) && fs::exists(DBPath + tagExt));
     }
 

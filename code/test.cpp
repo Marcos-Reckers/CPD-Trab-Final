@@ -29,20 +29,34 @@
 
 int main()
 {
-    std::cout << database::convert("C:/Users/kersz/Documents/ufrgs/Semestre_3/CPDFinal/code/DB_Steam.csv", -1) << std::endl;
+    // std::cout << database::convert("C:/Users/kersz/Documents/ufrgs/Semestre_3/CPDFinal/code/DB_Steam.csv", -1) << std::endl;
 
-    database::append("C:/Users/kersz/Documents/ufrgs/Semestre_3/CPDFinal/code/NewGames.csv", 0, "", "", "", "", "", "", "", "", "", "");
-    // database::append("", 02230903, "", "", "", "", "", "", "", "", "", "");
+    // database::append("C:/Users/kersz/Documents/ufrgs/Semestre_3/CPDFinal/code/NewGames.csv", 0, "", "", "", "", "", "", "", "", "", "");
+    // database::append("", 2230903, "IANSSTESTGAME", "TEST DEV", "TEST PUB", "2027", "TEST TAG", "TEST GAMEDET", "English", "Action", "Free", "Mostly Positive");
 
-    auto ret = database::search({""}, {""}, {""}, {""}, {""}, {""}, {""}, "00", -1, -1, -1, -1, false);
-    for(auto item : ret)
-    {
-        for(auto item2 : item)
-        {
-            std::cout << item2 << " ";
-        }
-        std::cout << std::endl;
-    }
+    // database::append("C:/Users/kersz/Documents/ufrgs/Semestre_3/CPDFinal/code/NewGames.csv", 0, "", "", "", "", "", "", "", "", "", "");
 
-    return 0;
+    // Trees::Patricia patricia;
+
+    // std::ifstream file("data/Steam.db.pat");
+    // std::ifstream strings("data/Steam.db.pat.str");
+    // patricia.readFromFile(file, strings);
+
+    // for(auto item : patricia.SearchPrefix("IANSSTESTGAME"))
+    // {
+    //     std::cout << item << std::endl;
+    // }
+
+
+    // auto ret = database::search({}, {}, {}, {}, {}, {}, {}, "IANSSTESTGAME", -1, -1, -1, -1, false);
+    // for(auto item : ret)
+    // {
+    //     for(auto item2 : item)
+    //     {
+    //         std::cout << item2 << " ; ";
+    //     }
+    //     std::cout << std::endl << std::endl;
+    // }
+
+    // return 0;
 }

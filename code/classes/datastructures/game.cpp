@@ -20,7 +20,7 @@ namespace DB
 
     const int GameSize = 1300;
     const int GameFields = 8;
-    int Game::writeToFile(std::ofstream &file) const
+    int Game::writeToFile(std::fstream &file) const
     {
         // The data to be written
         std::array<const char *, GameFields> data({reinterpret_cast<const char *>(&(this->appid)),

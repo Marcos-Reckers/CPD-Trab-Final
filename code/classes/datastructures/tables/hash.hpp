@@ -48,6 +48,23 @@ namespace Tables
             }
             return false;
         }
+        
+        bool DeleteGame(int Data)
+        {
+            for (auto it = this->hashTable.begin(); it != this->hashTable.end(); it++)
+            {
+                for (size_t i = 0; i < it->second.size(); i++)
+                {
+                    if (it->second[i] == Data)
+                    {
+                        it->second.erase(it->second.begin() + i, it->second.begin() + i + 1);
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         bool Delete(const T &key)
         {
             auto it = this->hashTable.find(key);
