@@ -194,6 +194,7 @@ class windows:
         output['decades']: int = - \
             1 if values['-DECADE-'] == '' else int(values['-DECADE-'])
         output['search']: bool = not values['-SEARCH_TYPE-']
+        # print(output)
 
         gamesFound = database.Search(output['genres'], output['languages'], output['tags'], output['date'], output['developers'], output['publishers'],
                                      output['reviews'], output['name'], output['price_min'], output['price_max'], output['decades'], output['id'], output['search'])
