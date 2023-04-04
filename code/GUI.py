@@ -42,7 +42,7 @@ class windows:
                 window[event].update(
                     self.checked if window[event].metadata else self.unchecked)
             elif event == 'ADICIONAR':
-                self.addDatabase(fields)
+                self.addDatabase(window, fields)
 
     def fail_popup(self, title: str, text: str):
         """Cria a janela de erro"""
@@ -68,7 +68,7 @@ class windows:
 
         return values['-FILENAME-']
 
-    def addDatabase(self, fields: dict):
+    def addDatabase(self, ParWindow: sg.Window, fields: dict):
         """Cria a janela para adicionar um jogo"""
         TITULOS = ('AppID', 'Nome', 'Desenvolvedor', 'Editora', 'Data de Lançamento',
                    'Tags Populares', 'Detalhes do Jogo', 'Linguagens', 'Género', 'Preço', 'Review')
@@ -133,6 +133,16 @@ class windows:
                 review = values['Review']
                 ret = database.Append(path, int(appid) if appid else 0, name, developer, publisher,
                                       release_date, popular_tags, game_details, languages, genre, price, review)
+                
+                fields["languages"] = self.fields('language', ret)
+                fields["genres"] = self.fields('genre', ret)
+                fields["tags"] = self.fields('tag', ret)
+                fields["developers"] = self.fields('developer', ret)
+                fields["publishers"] = self.fields('publisher', ret)
+                fields["dates"] = self.fields('date', ret)
+                fields["price"] = self.fields('price', ret)[0]
+                fields["decades"] = self.fields('decade', ret)
+                self.cleanFields(ParWindow, fields)
                 break
 
         window.close()
@@ -368,6 +378,63 @@ class windows:
                 sg.Button('ADICIONAR')
                 ]
                 ]
+
+    def fields(self, field: str, data: list[list[str]] = None) -> list:
+        database_index = 0
+        match field:
+            case 'genre':
+                database_field = 'gen'
+                database_index = 1
+            case 'language':
+                database_field = 'lan'
+                database_index = 0
+            case 'tag':
+                database_field = 'tag'
+                database_index = 4
+            case 'developer':
+                database_field = 'dev'
+                database_index = 2
+            case 'publisher':
+                database_field = 'pub'
+                database_index = 3
+            case 'date':
+                database_field = 'dat'
+                database_index = 5
+            case 'price':
+                database_field = 'pri'
+                database_index = 6
+            case 'decade':
+                database_field = 'dat'
+                database_index = 5
+
+        out = database.GetField(
+            database_field) if data is None else data[database_index]
+        sortedFields = sorted(out)
+
+        while '' in sortedFields:
+            sortedFields.remove('')
+        while '\r\n' in sortedFields:
+            sortedFields.remove('\r\n')
+
+        if field == 'decade':
+            decade: int = int(sortedFields[0])
+            offsetDec = decade % 10
+            initialDec = decade - offsetDec
+            # -3 para ignorar TBA e NaN
+            finalDec = int(sortedFields[len(sortedFields)-3]) + 10
+            return list(range(initialDec, finalDec, 10))
+        elif field == 'price':
+            price: int = 0
+            for i in sortedFields:
+                if i == '' or i == '\r\n':
+                    continue
+                num = int(i)
+                if num > price:
+                    price = num
+            max_price = float(price) / 100
+            return [max_price]
+
+        return sortedFields
 
 
 if __name__ == "__main__":
