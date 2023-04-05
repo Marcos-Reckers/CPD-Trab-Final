@@ -6,11 +6,12 @@ class Program:
         self.windowManager = windows()
 
     def run(self):
+        time = None
         securityChecks = True
         while securityChecks:
             if not database.Validate():
                 csv_path = self.windowManager.create_DB()
-                if csv_path == 'exit':
+                if csv_path is None:
                     return
                 
                 time = database.Convert(csv_path, -1)
@@ -18,10 +19,11 @@ class Program:
                     self.windowManager.fail_popup("Vapor: Arquivo CSV Invalido", "O arquivo CSV selecionado não é valido.\n\nTente novamente.")
                 else:
                     time = time.removeprefix("Converted database in ").removesuffix(" ms")
-                    self.windowManager.fail_popup("Vapor: Base de Dados Criada", f"A base de dados foi criada com sucesso em {time} milisegundos\n\nClique para prosseguir")
                 continue
 
             securityChecks = False
+
+        self.windowManager.splash(time)
 
         self.windowManager.search()
 

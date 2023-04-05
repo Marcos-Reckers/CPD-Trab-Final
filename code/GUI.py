@@ -60,29 +60,18 @@ class windows:
 
     def fail_popup(self, title: str, text: str):
         """Cria a janela de erro"""
-        sg.Window(title, [[sg.Text(text, justification='c')], [sg.Button("Continuar")]], text_justification='c', element_justification='c', icon=self.icon).read(close=True)
+        sg.popup_error(text, title=title, icon=self.icon)
 
-    def create_DB(self) -> str:
+    def splash(self, time: str):
+        sg.popup_no_buttons("" if time is None else f"Base de dados carregada em {time} ms",
+                            title="Vapor: Inicializando...",
+                            image=self.icon, icon=self.icon, non_blocking=True, no_titlebar=True, auto_close=True)
+
+    def create_DB(self) -> str or None:
         """Cria a janela para procurar e criar a base de dados"""
-        create_DB_screen = [
-            [sg.Text('Caminho para DB')],
-            [sg.Combo(sg.user_settings_get_entry('-filenames-', []), default_value=sg.user_settings_get_entry(
-                '-last filename-', ''), size=(80, 1), key='-FILENAME-'), sg.FileBrowse()],
-            [sg.Button('Go'), sg.Button('Exit')]
-        ]
-
-        event, values = sg.Window(
-            "Vapor: Criação da Base de Dados", create_DB_screen,
-            icon=self.icon).read(close=True)
-
-        if event == 'Go':
-            sg.user_settings_set_entry(
-                '-filenames-', list(set(sg.user_settings_get_entry('-filenames-', []) + [values['-FILENAME-'], ])))
-            sg.user_settings_set_entry('-last filename-', values['-FILENAME-'])
-        elif event in (sg.WIN_CLOSED, 'Exit'):     # If user closed the window
-            return 'exit'
-
-        return values['-FILENAME-']
+        return sg.popup_get_file("Escolha um Arquivo para a Base de Dados", 
+                                 title="Vapor: Criação da Base de Dados", 
+                                 icon=self.icon, history=True, default_extension='csv', file_types=(("CSV Files", "*.csv")))
 
     def addDatabase(self, ParWindow: sg.Window, fields: dict):
         """Cria a janela para adicionar um jogo"""
@@ -313,7 +302,7 @@ class windows:
         self.checked = images.CHECKED
         self.unchecked = images.UNCHECKED
         return [
-                [
+            [
                 sg.Text('Generos', justification="center",
                         size=self.block_column_size-3, expand_x=True),
                 sg.Text('Idiomas', justification="center",
@@ -326,8 +315,8 @@ class windows:
                         size=self.block_column_size-3, expand_x=True),
                 sg.Text('Editora', justification="center",
                         size=self.block_column_size-3, expand_x=True)
-                ],
-                [
+            ],
+            [
                 sg.Listbox(values=fields["genres"], select_mode=sg.SELECT_MODE_MULTIPLE, size=(
                     self.block_column_size - 3, self.block_line_size), key='-GENERO-', expand_x=True, expand_y=True),
                 sg.Listbox(values=fields["languages"], select_mode=sg.SELECT_MODE_MULTIPLE, size=(
@@ -340,20 +329,20 @@ class windows:
                     self.block_column_size - 3, self.block_line_size), key='-DEV-', expand_x=True, expand_y=True),
                 sg.Listbox(values=fields["publishers"], select_mode=sg.SELECT_MODE_MULTIPLE, size=(
                     self.block_column_size - 3, self.block_line_size), key='-PUBLISHER-', expand_x=True, expand_y=True)
-                ],
-                [
+            ],
+            [
                 sg.Push(), sg.Text('Preço Minimo', justification="center", expand_x=True), sg.Push(), sg.Text(
                     'Preço Maximo', justification="center", expand_x=True), sg.Push()
-                ],
-                [
+            ],
+            [
                 sg.Push(), sg.Slider(orientation="h", range=(0, self.max_price), resolution=0.01, key='-PRICE_MIN-', expand_x=True), sg.Slider(
                     orientation="h", range=(0, self.max_price), resolution=0.01, default_value=fields["price"], key='-PRICE_MAX-', expand_x=True), sg.Push()
-                ],
-                [
+            ],
+            [
                 sg.Text('Década:'), sg.Combo(
                     values=fields["decades"], key='-DECADE-')
-                ],
-                [
+            ],
+            [
                 [sg.Text('Review:')],
                 [
                     sg.Image(self.unchecked, key='-REV_EX_POS-', metadata=False,
@@ -379,24 +368,24 @@ class windows:
                     sg.Image(self.unchecked, key='-REV_EX_NEG-', metadata=False,
                              enable_events=True), sg.Text('Extremamente Negativas', size=self.block_column_size),
                 ]
-                ],
-                [
+            ],
+            [
                 sg.Text('AppID:'), sg.InputText(
                     key='-ID-', size=10),
                 sg.Text('Nome:'), sg.InputText(
                     key='-NAME-')
-                ],
-                [
+            ],
+            [
                 sg.Button('Buscar'),
                 sg.Button('Limpar'),
                 [sg.Text('Tipo de Busca:')],
                 [sg.Text('Inclusivo'),
-                    sg.Button(image_data=self.toggle_btn_on, key='-SEARCH_TYPE-', button_color=(
-                        sg.theme_background_color(), sg.theme_background_color()), border_width=0, metadata=True),
-                    sg.Text('Exclusivo')],
+                 sg.Button(image_data=self.toggle_btn_on, key='-SEARCH_TYPE-', button_color=(
+                     sg.theme_background_color(), sg.theme_background_color()), border_width=0, metadata=True),
+                 sg.Text('Exclusivo')],
                 sg.Button('Adicionar')
-                ]
-                ]
+            ]
+        ]
 
     def fields(self, field: str, data: list[list[str]] = None) -> list:
         database_index = 0

@@ -19,3 +19,6 @@ def Validate() -> bool:
 
 def GetField(field: str) -> list[str]:
     return database.GetField(field)
+
+if __name__ == "__main__":
+    print("This is a module, not a script.")
