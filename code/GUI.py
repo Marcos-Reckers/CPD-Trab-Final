@@ -56,7 +56,7 @@ class windows:
             elif event == 'Adicionar':
                 self.addDatabase(window, fields)
             elif event in (sg.WIN_CLOSED, 'Exit'):     # If user closed the window
-                exit(0)
+                break
 
     def fail_popup(self, title: str, text: str):
         """Cria a janela de erro"""
@@ -80,7 +80,7 @@ class windows:
                 '-filenames-', list(set(sg.user_settings_get_entry('-filenames-', []) + [values['-FILENAME-'], ])))
             sg.user_settings_set_entry('-last filename-', values['-FILENAME-'])
         elif event in (sg.WIN_CLOSED, 'Exit'):     # If user closed the window
-            exit(0)
+            return 'exit'
 
         return values['-FILENAME-']
 
