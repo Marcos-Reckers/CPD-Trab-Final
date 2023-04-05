@@ -10,12 +10,14 @@ class Program:
         while securityChecks:
             if not database.Validate():
                 csv_path = self.windowManager.create_DB()
+                if csv_path == 'exit':
+                    return
+                
                 time = database.Convert(csv_path, -1)
                 if "Failed" in time:
                     self.windowManager.fail_popup("Vapor: Arquivo CSV Invalido", "O arquivo CSV selecionado não é valido.\n\nTente novamente.")
                 else:
-                    time = time.removeprefix("Converted database in ")
-                    time = time.removesuffix(" ms")
+                    time = time.removeprefix("Converted database in ").removesuffix(" ms")
                     self.windowManager.fail_popup("Vapor: Base de Dados Criada", f"A base de dados foi criada com sucesso em {time} milisegundos\n\nClique para prosseguir")
                 continue
 

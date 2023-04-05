@@ -6,3 +6,4 @@ settings.json
 __pycache__
 /code/build
 /code/DB.cpp
+!Vapor.exe
