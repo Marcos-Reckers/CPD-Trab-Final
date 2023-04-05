@@ -390,10 +390,10 @@ class windows:
                 sg.Button('Buscar'),
                 sg.Button('Limpar'),
                 [sg.Text('Tipo de Busca:')],
-                [sg.Text('OR'),
+                [sg.Text('Inclusivo'),
                     sg.Button(image_data=self.toggle_btn_on, key='-SEARCH_TYPE-', button_color=(
                         sg.theme_background_color(), sg.theme_background_color()), border_width=0, metadata=True),
-                    sg.Text('AND')],
+                    sg.Text('Exclusivo')],
                 sg.Button('Adicionar')
                 ]
                 ]
