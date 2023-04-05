@@ -75,7 +75,7 @@ class windows:
         """Cria a janela para procurar e criar a base de dados"""
         return sg.popup_get_file("Escolha um Arquivo para a Base de Dados", 
                                  title="Vapor: Criação da Base de Dados", 
-                                 icon=self.icon, history=True, default_extension='csv', file_types=(("CSV Files", "*.csv")))
+                                 icon=self.icon, history=True, default_extension='csv', file_types=(('CSV Files', '*.csv'),))
 
     def addDatabase(self, ParWindow: sg.Window, fields: dict):
         """Cria a janela para adicionar um jogo"""
