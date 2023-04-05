@@ -312,7 +312,7 @@ class windows:
         self.toggle_btn_on = images.TOGGLE_BTN_ON
         self.checked = images.CHECKED
         self.unchecked = images.UNCHECKED
-        return [[sg.Text('STEAM BUG'),],
+        return [
                 [
                 sg.Text('Generos', justification="center",
                         size=self.block_column_size-3, expand_x=True),
