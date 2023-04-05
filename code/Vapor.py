@@ -23,9 +23,7 @@ class Program:
 
             securityChecks = False
 
-        self.windowManager.splash(time)
-
-        self.windowManager.search()
+        self.windowManager.run(time)
 
 
 if __name__ == "__main__":

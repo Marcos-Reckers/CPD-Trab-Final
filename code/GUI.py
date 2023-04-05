@@ -10,6 +10,10 @@ class windows:
         self.icon = images.ICON
         sg.change_look_and_feel('DarkGray13')
 
+    def run(self, time: str):
+        self.splash(time)
+        self.search()
+
     def search(self):
         fields: dict = {}
         fields["languages"] = self.fields('language')
