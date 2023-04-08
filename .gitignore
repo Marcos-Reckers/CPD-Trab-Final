@@ -4,6 +4,6 @@ settings.json
 /data
 /code/data
 __pycache__
-/code/build
+/code/Python/build
 /code/DB.cpp
 !Vapor.exe
