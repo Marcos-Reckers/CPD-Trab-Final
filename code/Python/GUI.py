@@ -79,8 +79,8 @@ class windows:
 
     def addDatabase(self, ParWindow: sg.Window, fields: dict):
         """Cria a janela para adicionar um jogo"""
-        TITULOS = ('AppID', 'Nome', 'Desenvolvedor', 'Editora', 'Data de Lançamento',
-                   'Tags Populares', 'Detalhes do Jogo', 'Linguagens', 'Género', 'Preço', 'Review')
+        TITULOS = ('AppID', 'Nome', 'Desenvolvedor', 'Editora', 'Lançamento',
+                   'Tags', 'Detalhes', 'Linguagens', 'Género', 'Preço', 'Review')
 
         layout = [[sg.Text(
             "Insire os dados de um jogo OU um caminho para um ficheiro .csv", font='Default 13')]]
@@ -89,7 +89,7 @@ class windows:
 
         layout += [[sg.Text(' ')]]
 
-        layout += [[sg.Text(string, enable_events=True, pad=(12, 1))
+        layout += [[sg.Text(string, enable_events=True, pad=(19, 1))
                     for index, string in enumerate(TITULOS)]]
 
         layout += [[sg.Input('', justification='l', key=string, size=(12, 1))
@@ -134,9 +134,9 @@ class windows:
                 name = values['Nome']
                 developer = values['Desenvolvedor']
                 publisher = values['Editora']
-                release_date = values['Data de Lançamento']
-                popular_tags = values['Tags Populares']
-                game_details = values['Detalhes do Jogo']
+                release_date = values['Lançamento']
+                popular_tags = values['Tags']
+                game_details = values['Detalhes']
                 languages = values['Linguagens']
                 genre = values['Género']
                 price = values['Preço']

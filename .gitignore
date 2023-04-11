@@ -1,9 +1,0 @@
-/cpd
-*.exe
-settings.json
-/data
-/code/data
-__pycache__
-/code/Python/build
-/code/DB.cpp
-!Vapor.exe
